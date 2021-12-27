@@ -16,7 +16,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  build-linux:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -32,5 +32,12 @@ jobs:
       - name: Build a linux binary
         run: pyinstaller shell.py
         
-      - name: Build a windows binary
-        run: python3 setup.py py2exe
+      - name: Package dist
+        run: zip -r linux.zip dist
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux.zip
+          path: |
+            linux.zip
