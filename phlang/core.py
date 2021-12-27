@@ -1715,6 +1715,20 @@ class BuiltInFunction(BaseFunction):
     return RTResult().success(Number.null)
   execute_print.arg_names = ['value']
 
+  def execute_python(self, exec_ctx):
+    code = exec_ctx.symbol_table.get('value')
+    try:
+      result = eval(code.value)
+      text = str(result)
+    except Exception as e:
+      return RTResult().failure(RTError(
+        self.pos_start, self.pos_end,
+        f'Python error: {str(e)}',
+        exec_ctx
+      ))
+    return RTResult().success(String(text))
+  execute_python.arg_names = ['value']
+
   def execute_print_ret(self, exec_ctx):
     return RTResult().success(String(str(exec_ctx.symbol_table.get('value'))))
   execute_print_ret.arg_names = ['value']
@@ -1892,6 +1906,7 @@ BuiltInFunction.pop         = BuiltInFunction("pop")
 BuiltInFunction.extend      = BuiltInFunction("extend")
 BuiltInFunction.len					= BuiltInFunction("len")
 BuiltInFunction.run					= BuiltInFunction("run")
+BuiltInFunction.python      = BuiltInFunction("python")
 
 #######################################
 # CONTEXT
@@ -2015,9 +2030,9 @@ class Interpreter:
       result, error = left.get_comparison_lte(right)
     elif node.op_tok.type == TT_GTE:
       result, error = left.get_comparison_gte(right)
-    elif node.op_tok.matches(TT_KEYWORD, 'AND'):
+    elif node.op_tok.matches(TT_KEYWORD, 'and'):
       result, error = left.anded_by(right)
-    elif node.op_tok.matches(TT_KEYWORD, 'OR'):
+    elif node.op_tok.matches(TT_KEYWORD, 'or'):
       result, error = left.ored_by(right)
 
     if error:
@@ -2034,7 +2049,7 @@ class Interpreter:
 
     if node.op_tok.type == TT_MINUS:
       number, error = number.multed_by(Number(-1))
-    elif node.op_tok.matches(TT_KEYWORD, 'NOT'):
+    elif node.op_tok.matches(TT_KEYWORD, 'not'):
       number, error = number.notted()
 
     if error:
@@ -2179,9 +2194,7 @@ class Interpreter:
   def visit_BreakNode(self, node, context):
     return RTResult().success_break()
 
-#######################################
-# RUN
-#######################################
+
 
 global_symbol_table = SymbolTable()
 global_symbol_table.set("Null", Number.null)
@@ -2203,19 +2216,17 @@ global_symbol_table.set("pop", BuiltInFunction.pop)
 global_symbol_table.set("extend", BuiltInFunction.extend)
 global_symbol_table.set("len", BuiltInFunction.len)
 global_symbol_table.set("run", BuiltInFunction.run)
+global_symbol_table.set("python", BuiltInFunction.python)
 
 def run(fn, text):
-  # Generate tokens
   lexer = Lexer(fn, text)
   tokens, error = lexer.make_tokens()
   if error: return None, error
 
-  # Generate AST
   parser = Parser(tokens)
   ast = parser.parse()
   if ast.error: return None, ast.error
 
-  # Run program
   interpreter = Interpreter()
   context = Context('<program>')
   context.symbol_table = global_symbol_table

@@ -24,7 +24,7 @@ func string_split(str)
   var list = []
 
   for i = 0 to len(str) then
-    APPend(list, str/i)
+    append(list, str/i)
   end
 
   return list
@@ -41,7 +41,7 @@ func string_indexOf(str, char)
 end
 
 func string_lastIndexOf(str, char)
-  for i = len(str)-1 to -1 STEP -1 then
+  for i = len(str)-1 to -1 step -1 then
     if str/i == char then
       return i
     end
