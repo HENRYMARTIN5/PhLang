@@ -1,24 +1,16 @@
-#######################################
-# IMPORTS
-#######################################
 
-from strings import *
+from phlang.strings import *
 import os
 import string
 import os
 import math
 
-#######################################
-# CONSTANTS
-#######################################
 
 DIGITS = '0123456789'
 LETTERS = string.ascii_letters
 LETTERS_DIGITS = LETTERS + DIGITS
 
-#######################################
-# ERRORS
-#######################################
+
 
 class Error:
   def __init__(self, pos_start, pos_end, error_name, details):

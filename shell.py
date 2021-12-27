@@ -1,4 +1,4 @@
-import core, sys
+import phlang.core as core, sys
 
 try:
 	if sys.argv[1]:
