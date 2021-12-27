@@ -59,3 +59,23 @@ jobs:
           name: PhLang-windows
           path: |
             dist
+  build-macos:
+    runs-on: macos-latest
+    
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a single command using the runners shell
+      - name: Install Dependencies
+        run: pip install -r requirements.txt && mv shell.py phlang.py
+        
+      - name: Build a linux binary
+        run: pyinstaller phlang.py
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: PhLang-linux
+          path: |
+            dist
