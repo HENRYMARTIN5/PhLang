@@ -31,13 +31,10 @@ jobs:
         
       - name: Build a linux binary
         run: pyinstaller shell.py
-        
-      - name: Package dist
-        run: zip -r linux.zip dist
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: linux.zip
+          name: PhLang-linux
           path: |
-            linux.zip
+            dist
