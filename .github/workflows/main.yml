@@ -27,10 +27,10 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Install Dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt && mv shell.py phlang.py
         
       - name: Build a linux binary
-        run: pyinstaller shell.py
+        run: pyinstaller phlang.py
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
@@ -48,14 +48,14 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Install Dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt && ren shell.py phlang.py
         
       - name: Build a linux binary
-        run: pyinstaller shell.py
+        run: pyinstaller phlang.py
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: PhLang-linux
+          name: PhLang-windows
           path: |
             dist
