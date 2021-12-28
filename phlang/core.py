@@ -1523,6 +1523,10 @@ Number.null = Number(0)
 Number.false = Number(0)
 Number.true = Number(1)
 Number.math_PI = Number(math.pi)
+Number.e = Number(math.e)
+Number.inf = Number(math.inf)
+Number.nan = Number(math.nan)
+Number.tau = Number(math.tau)
 
 class String(Value):
   def __init__(self, value):
@@ -1992,6 +1996,125 @@ class BuiltInFunction(BaseFunction):
     return RTResult().success(Number.null)
   execute_create_text.arg_names = ["text", "x", "y"]
 
+  def execute_math_acos(self, exec_ctx):
+    return RTResult().success(Number(math.acos(exec_ctx.symbol_table.get("x").value)))
+  execute_math_acos.arg_names = ["x"]
+
+  def execute_math_acosh(self, exec_ctx):
+    return RTResult().success(Number(math.acosh(exec_ctx.symbol_table.get("x").value)))
+  execute_math_acosh.arg_names = ["x"]
+
+  def execute_math_asin(self, exec_ctx):
+    return RTResult().success(Number(math.asin(exec_ctx.symbol_table.get("x").value)))
+  execute_math_asin.arg_names = ["x"]
+
+  def execute_math_asinh(self, exec_ctx):
+    return RTResult().success(Number(math.asinh(exec_ctx.symbol_table.get("x").value)))
+  execute_math_asinh.arg_names = ["x"]
+
+  def execute_math_atan(self, exec_ctx):
+    return RTResult().success(Number(math.atan(exec_ctx.symbol_table.get("x").value)))
+  execute_math_atan.arg_names = ["x"]
+
+  def execute_math_atanh(self, exec_ctx):
+    return RTResult().success(Number(math.atanh(exec_ctx.symbol_table.get("x").value)))
+  execute_math_atanh.arg_names = ["x"]
+
+  def execute_math_atan2(self, exec_ctx):
+    return RTResult().success(Number(math.atan2(exec_ctx.symbol_table.get("y").value, exec_ctx.symbol_table.get("x").value)))
+  execute_math_atan2.arg_names = ["y", "x"]
+
+  def execute_math_cbrt(self, exec_ctx):
+    return RTResult().success(Number(math.cbrt(exec_ctx.symbol_table.get("x").value)))
+  execute_math_cbrt.arg_names = ["x"]
+
+  def execute_math_ceil(self, exec_ctx):
+    return RTResult().success(Number(math.ceil(exec_ctx.symbol_table.get("x").value)))
+  execute_math_ceil.arg_names = ["x"]
+
+  def execute_math_cos(self, exec_ctx):
+    return RTResult().success(Number(math.cos(exec_ctx.symbol_table.get("x").value)))
+  execute_math_cos.arg_names = ["x"]
+
+  def execute_math_cosh(self, exec_ctx):
+    return RTResult().success(Number(math.cosh(exec_ctx.symbol_table.get("x").value)))
+  execute_math_cosh.arg_names = ["x"]
+
+  def execute_math_degrees(self, exec_ctx):
+    return RTResult().success(Number(math.degrees(exec_ctx.symbol_table.get("x").value)))
+  execute_math_degrees.arg_names = ["x"]
+
+  def execute_math_erf(self, exec_ctx):
+    return RTResult().success(Number(math.erf(exec_ctx.symbol_table.get("x").value)))
+  execute_math_erf.arg_names = ["x"]
+
+  def execute_math_erfc(self, exec_ctx):
+    return RTResult().success(Number(math.erfc(exec_ctx.symbol_table.get("x").value)))
+  execute_math_erfc.arg_names = ["x"]
+
+  def execute_math_exp(self, exec_ctx):
+    return RTResult().success(Number(math.exp(exec_ctx.symbol_table.get("x").value)))
+  execute_math_exp.arg_names = ["x"]
+
+  def execute_math_expm1(self, exec_ctx):
+    return RTResult().success(Number(math.expm1(exec_ctx.symbol_table.get("x").value)))
+  execute_math_expm1.arg_names = ["x"]
+
+  def execute_math_floor(self, exec_ctx):
+    return RTResult().success(Number(math.floor(exec_ctx.symbol_table.get("x").value)))
+  execute_math_floor.arg_names = ["x"]
+
+  def execute_math_gamma(self, exec_ctx):
+    return RTResult().success(Number(math.gamma(exec_ctx.symbol_table.get("x").value)))
+  execute_math_gamma.arg_names = ["x"]
+
+  def execute_math_lgamma(self, exec_ctx):
+    return RTResult().success(Number(math.lgamma(exec_ctx.symbol_table.get("x").value)))
+  execute_math_lgamma.arg_names = ["x"]
+
+  def execute_math_log(self, exec_ctx):
+    return RTResult().success(Number(math.log(exec_ctx.symbol_table.get("x").value)))
+  execute_math_log.arg_names = ["x"]
+
+  def execute_math_log10(self, exec_ctx):
+    return RTResult().success(Number(math.log10(exec_ctx.symbol_table.get("x").value)))
+  execute_math_log10.arg_names = ["x"]
+
+  def execute_math_log1p(self, exec_ctx):
+    return RTResult().success(Number(math.log1p(exec_ctx.symbol_table.get("x").value)))
+  execute_math_log1p.arg_names = ["x"]
+
+  def execute_math_log2(self, exec_ctx):
+    return RTResult().success(Number(math.log2(exec_ctx.symbol_table.get("x").value)))
+  execute_math_log2.arg_names = ["x"]
+
+  def execute_math_radians(self, exec_ctx):
+    return RTResult().success(Number(math.radians(exec_ctx.symbol_table.get("x").value)))
+  execute_math_radians.arg_names = ["x"]
+
+  def execute_math_sin(self, exec_ctx):
+    return RTResult().success(Number(math.sin(exec_ctx.symbol_table.get("x").value)))
+  execute_math_sin.arg_names = ["x"]
+
+  def execute_math_sinh(self, exec_ctx):
+    return RTResult().success(Number(math.sinh(exec_ctx.symbol_table.get("x").value)))
+  execute_math_sinh.arg_names = ["x"]
+
+  def execute_math_sqrt(self, exec_ctx):
+    return RTResult().success(Number(math.sqrt(exec_ctx.symbol_table.get("x").value)))
+  execute_math_sqrt.arg_names = ["x"]
+
+  def execute_math_tan(self, exec_ctx):
+    return RTResult().success(Number(math.tan(exec_ctx.symbol_table.get("x").value)))
+  execute_math_tan.arg_names = ["x"]
+
+  def execute_math_tanh(self, exec_ctx):
+    return RTResult().success(Number(math.tanh(exec_ctx.symbol_table.get("x").value)))
+  execute_math_tanh.arg_names = ["x"]
+
+  def execute_math_trunc(self, exec_ctx):
+    return RTResult().success(Number(math.trunc(exec_ctx.symbol_table.get("x").value)))
+  execute_math_trunc.arg_names = ["x"]
 
 BuiltInFunction.print         = BuiltInFunction("print")
 BuiltInFunction.print_ret     = BuiltInFunction("print_ret")
@@ -2018,6 +2141,41 @@ BuiltInFunction.resize_window = BuiltInFunction("resize_window")
 BuiltInFunction.clear_window  = BuiltInFunction("clear_window")
 BuiltInFunction.create_button = BuiltInFunction("create_button")
 BuiltInFunction.create_text   = BuiltInFunction("create_text")
+
+BuiltInFunction.math_acos = BuiltInFunction("math_acos")
+BuiltInFunction.math_acosh   = BuiltInFunction("math_acosh")
+BuiltInFunction.math_asin   = BuiltInFunction("math_asin")
+BuiltInFunction.math_asinh   = BuiltInFunction("math_asinh")
+BuiltInFunction.math_atan   = BuiltInFunction("math_atan")
+BuiltInFunction.math_atanh   = BuiltInFunction("math_atanh")
+BuiltInFunction.math_atan2   = BuiltInFunction("math_atan2")
+BuiltInFunction.math_cbrt   = BuiltInFunction("math_cbrt")
+BuiltInFunction.math_ceil   = BuiltInFunction("math_ceil")
+BuiltInFunction.math_cos   = BuiltInFunction("math_cos")
+BuiltInFunction.math_cosh   = BuiltInFunction("math_cosh")
+BuiltInFunction.math_degrees   = BuiltInFunction("math_degrees")
+BuiltInFunction.math_erf   = BuiltInFunction("math_erf")
+BuiltInFunction.math_erfc   = BuiltInFunction("math_erfc")
+BuiltInFunction.math_exp   = BuiltInFunction("math_exp")
+BuiltInFunction.math_expm1  = BuiltInFunction("math_expm1")
+BuiltInFunction.math_fabs   =  BuiltInFunction("math_fabs")
+BuiltInFunction.math_factorial   = BuiltInFunction("math_factorial")
+BuiltInFunction.math_floor   = BuiltInFunction("math_floor")
+BuiltInFunction.math_gamma   = BuiltInFunction("math_gamma")
+BuiltInFunction.math_lgamma   = BuiltInFunction("math_lgamma")
+BuiltInFunction.math_log   = BuiltInFunction("math_log")
+BuiltInFunction.math_log10   = BuiltInFunction("math_log10")
+BuiltInFunction.math_log1p   = BuiltInFunction("math_log1p")
+BuiltInFunction.math_log2   = BuiltInFunction("math_log2")
+BuiltInFunction.math_modf   = BuiltInFunction("math_modf")
+BuiltInFunction.math_pow   = BuiltInFunction("math_pow")
+BuiltInFunction.math_radians   = BuiltInFunction("math_radians")
+BuiltInFunction.math_sin  = BuiltInFunction("math_sin")
+BuiltInFunction.math_sinh  = BuiltInFunction("math_sinh")
+BuiltInFunction.math_sqrt   = BuiltInFunction("math_sqrt")
+BuiltInFunction.math_tan   = BuiltInFunction("math_tan")
+BuiltInFunction.math_tanh  = BuiltInFunction("math_tanh")
+BuiltInFunction.math_trunc   = BuiltInFunction("math_trunc")
 
 class Context:
   def __init__(self, display_name, parent=None, parent_entry_pos=None):
@@ -2292,10 +2450,12 @@ class Interpreter:
 
 
 global_symbol_table = SymbolTable()
+# Basic globals
 global_symbol_table.set("Null", Number.null)
 global_symbol_table.set("false", Number.false)
 global_symbol_table.set("true", Number.true)
 global_symbol_table.set("math_pi", Number.math_PI)
+# Basic functions
 global_symbol_table.set("print", BuiltInFunction.print)
 global_symbol_table.set("print_ret", BuiltInFunction.print_ret)
 global_symbol_table.set("input", BuiltInFunction.input)
@@ -2311,10 +2471,13 @@ global_symbol_table.set("pop", BuiltInFunction.pop)
 global_symbol_table.set("extend", BuiltInFunction.extend)
 global_symbol_table.set("len", BuiltInFunction.len)
 global_symbol_table.set("run", BuiltInFunction.run)
+# Python integration
 global_symbol_table.set("python", BuiltInFunction.python)
 global_symbol_table.set("py", BuiltInFunction.python)
 global_symbol_table.set("py_import", BuiltInFunction.python_import)
+# IO
 global_symbol_table.set("readfile", BuiltInFunction.read_file)
+# GUI
 global_symbol_table.set("openwindow", BuiltInFunction.open_window)
 global_symbol_table.set("closewindow", BuiltInFunction.close_window)
 global_symbol_table.set("window_width", BuiltInFunction.window_width)
@@ -2323,6 +2486,50 @@ global_symbol_table.set("window_resize", BuiltInFunction.resize_window)
 global_symbol_table.set("window_clear", BuiltInFunction.clear_window)
 global_symbol_table.set("window_create_button", BuiltInFunction.create_button)
 global_symbol_table.set("window_create_text", BuiltInFunction.create_text)
+# Fancy math
+global_symbol_table.set("math_e", Number.e)
+global_symbol_table.set("math_inf", Number.inf)
+global_symbol_table.set("math_nan", Number.nan)
+global_symbol_table.set("math_tau", Number.tau)
+global_symbol_table.set("math_acos", BuiltInFunction.math_acos)
+global_symbol_table.set("math_acosh", BuiltInFunction.math_acosh)
+global_symbol_table.set("math_asin", BuiltInFunction.math_asin)
+global_symbol_table.set("math_asinh", BuiltInFunction.math_asinh)
+global_symbol_table.set("math_atan", BuiltInFunction.math_atan)
+global_symbol_table.set("math_atanh", BuiltInFunction.math_atanh)
+global_symbol_table.set("math_atan2", BuiltInFunction.math_atan2)
+global_symbol_table.set("math_cbrt", BuiltInFunction.math_cbrt)
+global_symbol_table.set("math_ceil", BuiltInFunction.math_ceil)
+global_symbol_table.set("math_cos", BuiltInFunction.math_cos)
+global_symbol_table.set("math_cosh", BuiltInFunction.math_cosh)
+global_symbol_table.set("math_degrees", BuiltInFunction.math_degrees)
+global_symbol_table.set("math_erf", BuiltInFunction.math_erf)
+global_symbol_table.set("math_erfc", BuiltInFunction.math_erfc)
+global_symbol_table.set("math_exp", BuiltInFunction.math_exp)
+global_symbol_table.set("math_expm1", BuiltInFunction.math_expm1)
+global_symbol_table.set("math_fabs", BuiltInFunction.math_fabs)
+global_symbol_table.set("math_factorial", BuiltInFunction.math_factorial)
+global_symbol_table.set("math_floor", BuiltInFunction.math_floor)
+global_symbol_table.set("math_gamma", BuiltInFunction.math_gamma)
+global_symbol_table.set("math_lgamma", BuiltInFunction.math_lgamma)
+global_symbol_table.set("math_log", BuiltInFunction.math_log)
+global_symbol_table.set("math_log10", BuiltInFunction.math_log10)
+global_symbol_table.set("math_log1p", BuiltInFunction.math_log1p)
+global_symbol_table.set("math_log2", BuiltInFunction.math_log2)
+global_symbol_table.set("math_modf", BuiltInFunction.math_modf)
+global_symbol_table.set("math_pow", BuiltInFunction.math_pow)
+global_symbol_table.set("math_radians", BuiltInFunction.math_radians)
+global_symbol_table.set("math_sin", BuiltInFunction.math_sin)
+global_symbol_table.set("math_sinh", BuiltInFunction.math_sinh)
+global_symbol_table.set("math_sqrt", BuiltInFunction.math_sqrt)
+global_symbol_table.set("math_tan", BuiltInFunction.math_tan)
+global_symbol_table.set("math_tanh", BuiltInFunction.math_tanh)
+global_symbol_table.set("math_trunc", BuiltInFunction.math_trunc)
+# String functions
+#  #5
+# TODO: #4 Add more string functions
+
+
 
 
 def run(fn, text):
