@@ -1,6 +1,8 @@
-# PhLang
+# pHLang
 
 Looking for documentation? Check the [wiki](https://github.com/HENRYMARTIN5/PhLang/wiki)
 
-*No, this is not perl. I don't know where Github got that idea from.*
+pHLang is a dynamically typed, interpreted, programming language made in Python.
+
+Looking for a quick set of installation instructions? [Check the Quickstart guide](https://github.com/HENRYMARTIN5/PhLang/wiki/Quickstart---Advanced-Installation-Guide)
  
