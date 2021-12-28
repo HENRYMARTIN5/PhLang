@@ -2545,7 +2545,7 @@ global_symbol_table.set("py", BuiltInFunction.python)
 global_symbol_table.set("py_import", BuiltInFunction.python_import)
 # IO
 global_symbol_table.set("readfile", BuiltInFunction.read_file)
-global_symbol_table.set("writefile", BuiltInFunction.write_file)
+global_symbol_table.set("writefile", BuiltInFunction.writefile)
 # GUI
 global_symbol_table.set("openwindow", BuiltInFunction.open_window)
 global_symbol_table.set("closewindow", BuiltInFunction.close_window)
@@ -2624,3 +2624,25 @@ def run(fn, text):
   result = interpreter.visit(ast.node, context)
 
   return result.value, result.error
+
+def main():
+
+  try:
+    while True:
+      text = input('phlang > ')
+      if text.strip() == "": continue
+      result, error = run('<stdin>', text)
+
+      if error:
+        print(error.as_string())
+      elif result:
+        if len(result.elements) == 1:
+          print(repr(result.elements[0]))
+        else:
+          print(repr(result))
+  except Exception as e:
+    print("Uncaught exception:", e)
+    main()
+
+if __name__ == "__main__":
+	main()
