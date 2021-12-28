@@ -27,7 +27,7 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Install Dependencies
-        run: pip install -r requirements.txt && mv shell.py phlang.py
+        run: pip install pyinstaller && mv shell.py phlang.py
         
       - name: Build a linux binary
         run: pyinstaller phlang.py
@@ -48,7 +48,7 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Install Dependencies
-        run: pip install -r requirements.txt && ren shell.py phlang.py
+        run: pip install pyinstaller && ren shell.py phlang.py
         
       - name: Build a linux binary
         run: pyinstaller phlang.py
