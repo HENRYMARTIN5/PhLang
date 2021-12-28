@@ -60,10 +60,6 @@ class RTError(Error):
 
     return 'Traceback (most recent call last):\n' + result
 
-#######################################
-# POSITION
-#######################################
-
 class Position:
   def __init__(self, idx, ln, col, fn, ftxt):
     self.idx = idx
@@ -84,10 +80,6 @@ class Position:
 
   def copy(self):
     return Position(self.idx, self.ln, self.col, self.fn, self.ftxt)
-
-#######################################
-# TOKENS
-#######################################
 
 TT_INT				= 'INT'
 TT_FLOAT    	= 'FLOAT'
@@ -154,10 +146,6 @@ class Token:
   def __repr__(self):
     if self.value: return f'{self.type}:{self.value}'
     return f'{self.type}'
-
-#######################################
-# LEXER
-#######################################
 
 class Lexer:
   def __init__(self, fn, text):
@@ -272,7 +260,7 @@ class Lexer:
         if self.current_char == '\\':
           escape_character = True
           self.advance()
-          continue # The above statements are useless without thiss one.
+          continue
         else:
           string += self.current_char
       self.advance()
@@ -355,9 +343,7 @@ class Lexer:
 
     self.advance()
 
-#######################################
-# NODES
-#######################################
+
 
 class NumberNode:
   def __init__(self, tok):
@@ -498,9 +484,6 @@ class BreakNode:
     self.pos_start = pos_start
     self.pos_end = pos_end
 
-#######################################
-# PARSE RESULT
-#######################################
 
 class ParseResult:
   def __init__(self):
@@ -535,9 +518,6 @@ class ParseResult:
       self.error = error
     return self
 
-#######################################
-# PARSER
-#######################################
 
 class Parser:
   def __init__(self, tokens):
@@ -568,7 +548,6 @@ class Parser:
       ))
     return res
 
-  ###################################
 
   def statements(self):
     res = ParseResult()
@@ -1224,7 +1203,6 @@ class Parser:
       False
     ))
 
-  ###################################
 
   def bin_op(self, func_a, ops, func_b=None):
     if func_b == None:
@@ -1244,9 +1222,7 @@ class Parser:
 
     return res.success(left)
 
-#######################################
-# RUNTIME RESULT
-#######################################
+
 
 class RTResult:
   def __init__(self):
@@ -1292,7 +1268,6 @@ class RTResult:
     return self
 
   def should_return(self):
-    # Note: this will allow you to continue and break outside the current function
     return (
       self.error or
       self.func_return_value or
@@ -1300,9 +1275,7 @@ class RTResult:
       self.loop_should_break
     )
 
-#######################################
-# VALUES
-#######################################
+
 
 class Value:
   def __init__(self):
@@ -1708,7 +1681,6 @@ class BuiltInFunction(BaseFunction):
   def __repr__(self):
     return f"<built-in function {self.name}>"
 
-  #####################################
 
   def execute_print(self, exec_ctx):
     print(str(exec_ctx.symbol_table.get('value')))
@@ -1908,22 +1880,12 @@ BuiltInFunction.len					= BuiltInFunction("len")
 BuiltInFunction.run					= BuiltInFunction("run")
 BuiltInFunction.python      = BuiltInFunction("python")
 
-
-#######################################
-# CONTEXT
-#######################################
-
 class Context:
   def __init__(self, display_name, parent=None, parent_entry_pos=None):
     self.display_name = display_name
     self.parent = parent
     self.parent_entry_pos = parent_entry_pos
     self.symbol_table = None
-
-#######################################
-# SYMBOL TABLE
-#######################################
-
 class SymbolTable:
   def __init__(self, parent=None):
     self.symbols = {}
@@ -1940,11 +1902,6 @@ class SymbolTable:
 
   def remove(self, name):
     del self.symbols[name]
-
-#######################################
-# INTERPRETER
-#######################################
-
 class Interpreter:
   def visit(self, node, context):
     method_name = f'visit_{type(node).__name__}'
@@ -1953,8 +1910,6 @@ class Interpreter:
 
   def no_visit_method(self, node, context):
     raise Exception(f'No visit_{type(node).__name__} method defined')
-
-  ###################################
 
   def visit_NumberNode(self, node, context):
     return RTResult().success(
