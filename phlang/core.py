@@ -4,11 +4,45 @@ import string
 import os
 import math
 from importlib import import_module
+import tkinter as tk
 
 DIGITS = '0123456789'
 LETTERS = string.ascii_letters
 LETTERS_DIGITS = LETTERS + DIGITS
 
+# Gui Globals
+WINDOW = None
+
+def createWindow(title):
+  global WINDOW
+  WINDOW = tk.Tk()
+  WINDOW.title(title)
+  WINDOW.geometry("600x400")
+  WINDOW.resizable(0, 0)
+  WINDOW.configure(background='#ffffff')
+
+def closeWindow():
+  WINDOW.destroy()
+
+def getWindowWidth():
+  return WINDOW.winfo_width()
+
+def getWindowHeight():
+  return WINDOW.winfo_height()
+
+def resizeWindow(height, width):
+  WINDOW.geometry(f"{width}x{height}")
+
+def clearWindow():
+  WINDOW.delete('all')
+
+def addButton(text, x, y, pyfunc):
+  button = tk.Button(WINDOW, text=text, command=lambda: eval(pyfunc))
+  button.place(x=x, y=y)
+
+def addText(text, x, y):
+  text = tk.Label(WINDOW, text=text)
+  text.place(x=x,y=y)
 
 
 
@@ -1920,23 +1954,70 @@ class BuiltInFunction(BaseFunction):
     return RTResult().success(Number.null)
   execute_run.arg_names = ["fn"]
 
-BuiltInFunction.print        = BuiltInFunction("print")
-BuiltInFunction.print_ret    = BuiltInFunction("print_ret")
-BuiltInFunction.input        = BuiltInFunction("input")
-BuiltInFunction.input_int    = BuiltInFunction("input_int")
-BuiltInFunction.clear        = BuiltInFunction("clear")
-BuiltInFunction.is_number    = BuiltInFunction("is_number")
-BuiltInFunction.is_string    = BuiltInFunction("is_string")
-BuiltInFunction.is_list      = BuiltInFunction("is_list")
-BuiltInFunction.is_function  = BuiltInFunction("is_function")
-BuiltInFunction.append       = BuiltInFunction("append")
-BuiltInFunction.pop          = BuiltInFunction("pop")
-BuiltInFunction.extend       = BuiltInFunction("extend")
-BuiltInFunction.len					 = BuiltInFunction("len")
-BuiltInFunction.run					 = BuiltInFunction("run")
-BuiltInFunction.python       = BuiltInFunction("python")
-BuiltInFunction.python_import= BuiltInFunction("python_import")
-BuiltInFunction.read_file    = BuiltInFunction("read_file")
+  def execute_open_window(self, exec_ctx):
+    createWindow(str(exec_ctx.symbol_table.get("title")))
+    return RTResult().success(Number.null)
+  execute_open_window.arg_names = ["title"]
+
+  def execute_close_window(self, exec_ctx):
+    closeWindow()
+    return RTResult().success(Number.null)
+  execute_close_window.arg_names = []
+
+  def execute_window_width(self, exec_ctx):
+    return RTResult().success(Number(getWindowWidth()))
+  execute_window_width.arg_names = []
+
+  def execute_window_height(self, exec_ctx):
+    return RTResult().success(Number(getWindowHeight()))
+  execute_window_height.arg_names = []
+  
+  def execute_resize_window(self, exec_ctx):
+    resizeWindow(exec_ctx.symbol_table.get("width").value, exec_ctx.symbol_table.get("height").value)
+    return RTResult().success(Number.null)
+  execute_resize_window.arg_names = ["height", "width"]
+
+  def execute_clear_window(self, exec_ctx):
+    clearWindow()
+    return RTResult().success(Number.null)
+  execute_clear_window.arg_names = []
+
+  def execute_create_button(self, exec_ctx):
+    addButton(str(exec_ctx.symbol_table.get("text")), exec_ctx.symbol_table.get("x").value, exec_ctx.symbol_table.get("y").value, exec_ctx.symbol_table.get("pyfunc").value)
+    return RTResult().success(Number.null)
+  execute_create_button.arg_names = ["text", "x", "y", "pyfunc"]
+
+  def execute_create_text(self, exec_ctx):
+    addText(str(exec_ctx.symbol_table.get("text")), exec_ctx.symbol_table.get("x").value, exec_ctx.symbol_table.get("y").value)
+    return RTResult().success(Number.null)
+  execute_create_text.arg_names = ["text", "x", "y"]
+
+
+BuiltInFunction.print         = BuiltInFunction("print")
+BuiltInFunction.print_ret     = BuiltInFunction("print_ret")
+BuiltInFunction.input         = BuiltInFunction("input")
+BuiltInFunction.input_int     = BuiltInFunction("input_int")
+BuiltInFunction.clear         = BuiltInFunction("clear")
+BuiltInFunction.is_number     = BuiltInFunction("is_number")
+BuiltInFunction.is_string     = BuiltInFunction("is_string")
+BuiltInFunction.is_list       = BuiltInFunction("is_list")
+BuiltInFunction.is_function   = BuiltInFunction("is_function")
+BuiltInFunction.append        = BuiltInFunction("append")
+BuiltInFunction.pop           = BuiltInFunction("pop")
+BuiltInFunction.extend        = BuiltInFunction("extend")
+BuiltInFunction.len				 	  = BuiltInFunction("len")
+BuiltInFunction.run				 	  = BuiltInFunction("run")
+BuiltInFunction.python        = BuiltInFunction("python")
+BuiltInFunction.python_import = BuiltInFunction("python_import")
+BuiltInFunction.read_file     = BuiltInFunction("read_file")
+BuiltInFunction.open_window   = BuiltInFunction("open_window")
+BuiltInFunction.close_window  = BuiltInFunction("close_window")
+BuiltInFunction.window_width  = BuiltInFunction("window_width")
+BuiltInFunction.window_height = BuiltInFunction("window_height")
+BuiltInFunction.resize_window = BuiltInFunction("resize_window")
+BuiltInFunction.clear_window  = BuiltInFunction("clear_window")
+BuiltInFunction.create_button = BuiltInFunction("create_button")
+BuiltInFunction.create_text   = BuiltInFunction("create_text")
 
 class Context:
   def __init__(self, display_name, parent=None, parent_entry_pos=None):
@@ -2234,6 +2315,15 @@ global_symbol_table.set("python", BuiltInFunction.python)
 global_symbol_table.set("py", BuiltInFunction.python)
 global_symbol_table.set("py_import", BuiltInFunction.python_import)
 global_symbol_table.set("readfile", BuiltInFunction.read_file)
+global_symbol_table.set("openwindow", BuiltInFunction.open_window)
+global_symbol_table.set("closewindow", BuiltInFunction.close_window)
+global_symbol_table.set("window_width", BuiltInFunction.window_width)
+global_symbol_table.set("window_height", BuiltInFunction.window_height)
+global_symbol_table.set("window_resize", BuiltInFunction.resize_window)
+global_symbol_table.set("window_clear", BuiltInFunction.clear_window)
+global_symbol_table.set("window_create_button", BuiltInFunction.create_button)
+global_symbol_table.set("window_create_text", BuiltInFunction.create_text)
+
 
 def run(fn, text):
   lexer = Lexer(fn, text)
