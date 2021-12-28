@@ -1,6 +1,6 @@
 # PhLang
 
-This programming language is a personal language based on [this tutorial](https://github.com/davidcallanan/py-myopl-code). I highly reccomend checking it out.
+Looking for documentation? Check the [wiki](https://github.com/HENRYMARTIN5/PhLang/wiki)
 
 *No, this is not perl. I don't know where Github got that idea from.*
  
