@@ -142,31 +142,31 @@ class Position:
   def copy(self):
     return Position(self.idx, self.ln, self.col, self.fn, self.ftxt)
 
-TT_INT				= 'INT'
-TT_FLOAT    	= 'FLOAT'
-TT_STRING			= 'STRING'
-TT_IDENTIFIER	= 'IDENTIFIER'
-TT_KEYWORD		= 'KEYWORD'
-TT_PLUS     	= 'PLUS'
-TT_MINUS    	= 'MINUS'
-TT_MUL      	= 'MUL'
-TT_DIV      	= 'DIV'
-TT_POW				= 'POW'
-TT_EQ					= 'EQ'
-TT_LPAREN   	= 'LPAREN'
-TT_RPAREN   	= 'RPAREN'
-TT_LSQUARE    = 'LSQUARE'
-TT_RSQUARE    = 'RSQUARE'
-TT_EE					= 'EE'
-TT_NE					= 'NE'
-TT_LT					= 'LT'
-TT_GT					= 'GT'
-TT_LTE				= 'LTE'
-TT_GTE				= 'GTE'
-TT_COMMA			= 'COMMA'
-TT_ARROW			= 'ARROW'
-TT_NEWLINE		= 'NEWLINE'
-TT_EOF				= 'EOF'
+TT_INT				= 'int'
+TT_FLOAT    	= 'float'
+TT_STRING			= 'string'
+TT_IDENTIFIER	= 'identifier'
+TT_KEYWORD		= 'keyword'
+TT_PLUS     	= 'plus'
+TT_MINUS    	= 'minus'
+TT_MUL      	= 'mul'
+TT_DIV      	= 'div'
+TT_POW				= 'pow'
+TT_EQ					= 'eq'
+TT_LPAREN   	= 'lparen'
+TT_RPAREN   	= 'rparen'
+TT_LSQUARE    = 'lsquare'
+TT_RSQUARE    = 'rsquare'
+TT_EE					= 'ee'
+TT_NE					= 'ne'
+TT_LT					= 'lt'
+TT_GT					= 'gt'
+TT_LTE				= 'lte'
+TT_GTE				= 'gte'
+TT_COMMA			= 'comma'
+TT_ARROW			= 'arrow'
+TT_NEWLINE		= 'newline'
+TT_EOF				= 'eof'
 
 KEYWORDS = [
   'var',
@@ -984,7 +984,7 @@ class Parser:
     condition = res.register(self.expr())
     if res.error: return res
 
-    if not self.current_tok.matches(TT_KEYWORD, 'THEN'):
+    if not self.current_tok.matches(TT_KEYWORD, 'then'):
       return res.failure(InvalidSyntaxError(
         self.current_tok.pos_start, self.current_tok.pos_end,
         f"Expected 'THEN'"
@@ -2115,6 +2115,59 @@ class BuiltInFunction(BaseFunction):
   def execute_math_trunc(self, exec_ctx):
     return RTResult().success(Number(math.trunc(exec_ctx.symbol_table.get("x").value)))
   execute_math_trunc.arg_names = ["x"]
+  
+  def execute_str_len(self, exec_ctx):
+    return RTResult().success(Number(len(exec_ctx.symbol_table.get("x").value)))
+  execute_str_len.arg_names = ["x"]
+
+  def execute_str_upper(self, exec_ctx):
+    return RTResult().success(String(exec_ctx.symbol_table.get("x").value.upper()))
+  execute_str_upper.arg_names = ["x"]
+
+  def execute_str_lower(self, exec_ctx):
+    return RTResult().success(String(exec_ctx.symbol_table.get("x").value.lower()))
+  execute_str_lower.arg_names = ["x"]
+
+  def execute_str_strip(self, exec_ctx):
+    return RTResult().success(String(exec_ctx.symbol_table.get("x").value.strip()))
+  execute_str_strip.arg_names = ["x"]
+
+  def execute_str_lstrip(self, exec_ctx):
+    return RTResult().success(String(exec_ctx.symbol_table.get("x").value.lstrip()))
+  execute_str_lstrip.arg_names = ["x"]
+
+  def execute_str_rstrip(self, exec_ctx):
+    return RTResult().success(String(exec_ctx.symbol_table.get("x").value.rstrip()))
+  execute_str_rstrip.arg_names = ["x"]
+
+  def execute_str_join(self, exec_ctx):
+    return RTResult().success(String(exec_ctx.symbol_table.get("x").value.join(exec_ctx.symbol_table.get("y").value)))
+  execute_str_join.arg_names = ["x", "y"]
+
+  def execute_str_split(self, exec_ctx):
+    return RTResult().success(List([String(s) for s in exec_ctx.symbol_table.get("x").value.split(exec_ctx.symbol_table.get("y").value)]))
+  execute_str_split.arg_names = ["x", "y"]
+
+  def execute_str_replace(self, exec_ctx):
+    return RTResult().success(String(exec_ctx.symbol_table.get("x").value.replace(exec_ctx.symbol_table.get("y").value, exec_ctx.symbol_table.get("z").value)))
+  execute_str_replace.arg_names = ["x", "y", "z"]
+
+  def execute_str_startswith(self, exec_ctx):
+    return RTResult().success(Number( int(exec_ctx.symbol_table.get("x").value.startswith(exec_ctx.symbol_table.get("y").value)) == True))
+  execute_str_startswith.arg_names = ["x", "y"]
+
+  def execute_str_endswith(self, exec_ctx):
+    return RTResult().success(Number(int(exec_ctx.symbol_table.get("x").value.endswith(exec_ctx.symbol_table.get("y").value == True))))
+  execute_str_endswith.arg_names = ["x", "y"]
+
+  def execute_writefile(self, exec_ctx):
+    file_name = exec_ctx.symbol_table.get("file_name").value
+    content = exec_ctx.symbol_table.get("content").value
+    with open(file_name, "w") as f:
+      f.write(content)
+      f.close()
+    return RTResult().success(Number(1))
+  execute_writefile.arg_names = ["file_name", "content"]
 
 BuiltInFunction.print         = BuiltInFunction("print")
 BuiltInFunction.print_ret     = BuiltInFunction("print_ret")
@@ -2176,6 +2229,19 @@ BuiltInFunction.math_sqrt   = BuiltInFunction("math_sqrt")
 BuiltInFunction.math_tan   = BuiltInFunction("math_tan")
 BuiltInFunction.math_tanh  = BuiltInFunction("math_tanh")
 BuiltInFunction.math_trunc   = BuiltInFunction("math_trunc")
+
+BuiltInFunction.str_len = BuiltInFunction("str_len")
+BuiltInFunction.str_lower = BuiltInFunction("str_lower")
+BuiltInFunction.str_upper = BuiltInFunction("str_upper")
+BuiltInFunction.str_split = BuiltInFunction("str_split")
+BuiltInFunction.str_strip = BuiltInFunction("str_strip")
+BuiltInFunction.str_lstrip = BuiltInFunction("str_lstrip")
+BuiltInFunction.str_rstrip = BuiltInFunction("str_rstrip")
+BuiltInFunction.str_join = BuiltInFunction("str_join")
+BuiltInFunction.str_replace = BuiltInFunction("str_replace")
+BuiltInFunction.str_startswith = BuiltInFunction("str_startswith")
+BuiltInFunction.str_endswith = BuiltInFunction("str_endswith")
+BuiltInFunction.writefile = BuiltInFunction("writefile")
 
 class Context:
   def __init__(self, display_name, parent=None, parent_entry_pos=None):
@@ -2447,6 +2513,8 @@ class Interpreter:
   def visit_BreakNode(self, node, context):
     return RTResult().success_break()
 
+  
+
 
 
 global_symbol_table = SymbolTable()
@@ -2477,6 +2545,7 @@ global_symbol_table.set("py", BuiltInFunction.python)
 global_symbol_table.set("py_import", BuiltInFunction.python_import)
 # IO
 global_symbol_table.set("readfile", BuiltInFunction.read_file)
+global_symbol_table.set("writefile", BuiltInFunction.write_file)
 # GUI
 global_symbol_table.set("openwindow", BuiltInFunction.open_window)
 global_symbol_table.set("closewindow", BuiltInFunction.close_window)
@@ -2526,9 +2595,17 @@ global_symbol_table.set("math_tan", BuiltInFunction.math_tan)
 global_symbol_table.set("math_tanh", BuiltInFunction.math_tanh)
 global_symbol_table.set("math_trunc", BuiltInFunction.math_trunc)
 # String functions
-#  #5
-# TODO: #4 Add more string functions
-
+global_symbol_table.set("str_len", BuiltInFunction.str_len)
+global_symbol_table.set("str_lower", BuiltInFunction.str_lower)
+global_symbol_table.set("str_upper", BuiltInFunction.str_upper)
+global_symbol_table.set("str_split", BuiltInFunction.str_split)
+global_symbol_table.set("str_join", BuiltInFunction.str_join)
+global_symbol_table.set("str_strip", BuiltInFunction.str_strip)
+global_symbol_table.set("str_lstrip", BuiltInFunction.str_lstrip)
+global_symbol_table.set("str_rstrip", BuiltInFunction.str_rstrip)
+global_symbol_table.set("str_startswith", BuiltInFunction.str_startswith)
+global_symbol_table.set("str_endswith", BuiltInFunction.str_endswith)
+global_symbol_table.set("str_replace", BuiltInFunction.str_replace)
 
 
 
