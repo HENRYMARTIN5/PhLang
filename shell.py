@@ -19,5 +19,5 @@ except:
 					print(repr(result.elements[0]))
 				else:
 					print(repr(result))
-	except error as e:
-		print("Uncaught exception:", e.as_string())
+	except Exception as e:
+		print("Uncaught exception:", e)

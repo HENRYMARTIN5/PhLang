@@ -1,3 +1,5 @@
+# I'm getting an error for some reason?
+
 var private_string_ascii = "翿翿翿翿翿翿翿翿翿\t\n翿翿翿翿翿翿翿翿翿翿翿翿翿翿翿翿翿翿翿翿翿 !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~翿"
 
 func string_concat(str, suffix)

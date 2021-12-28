@@ -4,7 +4,7 @@ import os
 import string
 import os
 import math
-
+from importlib import import_module
 
 DIGITS = '0123456789'
 LETTERS = string.ascii_letters
@@ -1690,7 +1690,7 @@ class BuiltInFunction(BaseFunction):
   def execute_python(self, exec_ctx):
     code = exec_ctx.symbol_table.get('value')
     try:
-      result = eval(code.value)
+      result = eval(code.value.replace('\\n', '\n').replace('\\t', '\t').replace('\\r', '\r'))
       text = str(result)
     except Exception as e:
       return RTResult().failure(RTError(
@@ -1701,6 +1701,8 @@ class BuiltInFunction(BaseFunction):
     return RTResult().success(String(text))
   execute_python.arg_names = ['value']
 
+
+
   def execute_print_ret(self, exec_ctx):
     return RTResult().success(String(str(exec_ctx.symbol_table.get('value'))))
   execute_print_ret.arg_names = ['value']
@@ -1709,6 +1711,20 @@ class BuiltInFunction(BaseFunction):
     text = input()
     return RTResult().success(String(text))
   execute_input.arg_names = []
+
+  def execute_read_file(self, exec_ctx):
+    file_name = exec_ctx.symbol_table.get('value')
+    try:
+      with open(file_name.value) as f:
+        text = f.read()
+    except Exception as e:
+      return RTResult().failure(RTError(
+        self.pos_start, self.pos_end,
+        f'Failed to open file {file_name.value}',
+        exec_ctx
+      ))
+    return RTResult().success(String(text))
+  execute_read_file.arg_names = ['value']
 
   def execute_input_int(self, exec_ctx):
     while True:
@@ -1740,6 +1756,19 @@ class BuiltInFunction(BaseFunction):
     is_number = isinstance(exec_ctx.symbol_table.get("value"), List)
     return RTResult().success(Number.true if is_number else Number.false)
   execute_is_list.arg_names = ["value"]
+
+  def execute_python_import(self, exec_ctx):
+    code = exec_ctx.symbol_table.get('value')
+    try:
+      globals()[code.value] = import_module(code.value)
+    except Exception as e:
+      return RTResult().failure(RTError(
+        self.pos_start, self.pos_end,
+        f'Python error: {str(e)}',
+        exec_ctx
+      ))
+    return RTResult().success(Number.null)
+  execute_python_import.arg_names = ['value']
 
   def execute_is_function(self, exec_ctx):
     is_number = isinstance(exec_ctx.symbol_table.get("value"), BaseFunction)
@@ -1864,21 +1893,23 @@ class BuiltInFunction(BaseFunction):
     return RTResult().success(Number.null)
   execute_run.arg_names = ["fn"]
 
-BuiltInFunction.print       = BuiltInFunction("print")
-BuiltInFunction.print_ret   = BuiltInFunction("print_ret")
-BuiltInFunction.input       = BuiltInFunction("input")
-BuiltInFunction.input_int   = BuiltInFunction("input_int")
-BuiltInFunction.clear       = BuiltInFunction("clear")
-BuiltInFunction.is_number   = BuiltInFunction("is_number")
-BuiltInFunction.is_string   = BuiltInFunction("is_string")
-BuiltInFunction.is_list     = BuiltInFunction("is_list")
-BuiltInFunction.is_function = BuiltInFunction("is_function")
-BuiltInFunction.append      = BuiltInFunction("append")
-BuiltInFunction.pop         = BuiltInFunction("pop")
-BuiltInFunction.extend      = BuiltInFunction("extend")
-BuiltInFunction.len					= BuiltInFunction("len")
-BuiltInFunction.run					= BuiltInFunction("run")
-BuiltInFunction.python      = BuiltInFunction("python")
+BuiltInFunction.print        = BuiltInFunction("print")
+BuiltInFunction.print_ret    = BuiltInFunction("print_ret")
+BuiltInFunction.input        = BuiltInFunction("input")
+BuiltInFunction.input_int    = BuiltInFunction("input_int")
+BuiltInFunction.clear        = BuiltInFunction("clear")
+BuiltInFunction.is_number    = BuiltInFunction("is_number")
+BuiltInFunction.is_string    = BuiltInFunction("is_string")
+BuiltInFunction.is_list      = BuiltInFunction("is_list")
+BuiltInFunction.is_function  = BuiltInFunction("is_function")
+BuiltInFunction.append       = BuiltInFunction("append")
+BuiltInFunction.pop          = BuiltInFunction("pop")
+BuiltInFunction.extend       = BuiltInFunction("extend")
+BuiltInFunction.len					 = BuiltInFunction("len")
+BuiltInFunction.run					 = BuiltInFunction("run")
+BuiltInFunction.python       = BuiltInFunction("python")
+BuiltInFunction.python_import= BuiltInFunction("python_import")
+BuiltInFunction.read_file    = BuiltInFunction("read_file")
 
 class Context:
   def __init__(self, display_name, parent=None, parent_entry_pos=None):
@@ -2173,6 +2204,9 @@ global_symbol_table.set("extend", BuiltInFunction.extend)
 global_symbol_table.set("len", BuiltInFunction.len)
 global_symbol_table.set("run", BuiltInFunction.run)
 global_symbol_table.set("python", BuiltInFunction.python)
+global_symbol_table.set("py", BuiltInFunction.python)
+global_symbol_table.set("py_import", BuiltInFunction.python_import)
+global_symbol_table.set("readfile", BuiltInFunction.read_file)
 
 def run(fn, text):
   lexer = Lexer(fn, text)
