@@ -13,13 +13,13 @@ LETTERS_DIGITS = LETTERS + DIGITS
 # Gui Globals
 WINDOW = None
 
-def createWindow(title):
+def createWindow(title, background):
   global WINDOW
   WINDOW = tk.Tk()
   WINDOW.title(title)
   WINDOW.geometry("600x400")
   WINDOW.resizable(0, 0)
-  WINDOW.configure(background='#ffffff')
+  WINDOW.configure(background=background)
 
 def closeWindow():
   WINDOW.destroy()
@@ -47,31 +47,31 @@ def addText(text, x, y):
 
 
 def string_with_arrows(text, pos_start, pos_end):
-	result = ''
+  result = ''
 
-	# Calculate indices
-	idx_start = max(text.rfind('\n', 0, pos_start.idx), 0)
-	idx_end = text.find('\n', idx_start + 1)
-	if idx_end < 0: idx_end = len(text)
-	
-	# Generate each line
-	line_count = pos_end.ln - pos_start.ln + 1
-	for i in range(line_count):
-		# Calculate line columns
-		line = text[idx_start:idx_end]
-		col_start = pos_start.col if i == 0 else 0
-		col_end = pos_end.col if i == line_count - 1 else len(line) - 1
+  # Calculate indices
+  idx_start = max(text.rfind('\n', 0, pos_start.idx), 0)
+  idx_end = text.find('\n', idx_start + 1)
+  if idx_end < 0: idx_end = len(text)
+  
+  # Generate each line
+  line_count = pos_end.ln - pos_start.ln + 1
+  for i in range(line_count):
+    # Calculate line columns
+    line = text[idx_start:idx_end]
+    col_start = pos_start.col if i == 0 else 0
+    col_end = pos_end.col if i == line_count - 1 else len(line) - 1
 
-		# Append to result
-		result += line + '\n'
-		result += ' ' * col_start + '^' * (col_end - col_start)
+    # Append to result
+    result += line + '\n'
+    result += ' ' * col_start + '^' * (col_end - col_start)
 
-		# Re-calculate indices
-		idx_start = idx_end
-		idx_end = text.find('\n', idx_start + 1)
-		if idx_end < 0: idx_end = len(text)
+    # Re-calculate indices
+    idx_start = idx_end
+    idx_end = text.find('\n', idx_start + 1)
+    if idx_end < 0: idx_end = len(text)
 
-	return result.replace('\t', '')
+  return result.replace('\t', '')
 
 class Error:
   def __init__(self, pos_start, pos_end, error_name, details):
@@ -142,31 +142,31 @@ class Position:
   def copy(self):
     return Position(self.idx, self.ln, self.col, self.fn, self.ftxt)
 
-TT_INT				= 'int'
-TT_FLOAT    	= 'float'
-TT_STRING			= 'string'
-TT_IDENTIFIER	= 'identifier'
-TT_KEYWORD		= 'keyword'
-TT_PLUS     	= 'plus'
-TT_MINUS    	= 'minus'
-TT_MUL      	= 'mul'
-TT_DIV      	= 'div'
-TT_POW				= 'pow'
-TT_EQ					= 'eq'
-TT_LPAREN   	= 'lparen'
-TT_RPAREN   	= 'rparen'
+TT_INT        = 'int'
+TT_FLOAT      = 'float'
+TT_STRING      = 'string'
+TT_IDENTIFIER  = 'identifier'
+TT_KEYWORD    = 'keyword'
+TT_PLUS       = 'plus'
+TT_MINUS      = 'minus'
+TT_MUL        = 'mul'
+TT_DIV        = 'div'
+TT_POW        = 'pow'
+TT_EQ          = 'eq'
+TT_LPAREN     = 'lparen'
+TT_RPAREN     = 'rparen'
 TT_LSQUARE    = 'lsquare'
 TT_RSQUARE    = 'rsquare'
-TT_EE					= 'ee'
-TT_NE					= 'ne'
-TT_LT					= 'lt'
-TT_GT					= 'gt'
-TT_LTE				= 'lte'
-TT_GTE				= 'gte'
-TT_COMMA			= 'comma'
-TT_ARROW			= 'arrow'
-TT_NEWLINE		= 'newline'
-TT_EOF				= 'eof'
+TT_EE          = 'ee'
+TT_NE          = 'ne'
+TT_LT          = 'lt'
+TT_GT          = 'gt'
+TT_LTE        = 'lte'
+TT_GTE        = 'gte'
+TT_COMMA      = 'comma'
+TT_ARROW      = 'arrow'
+TT_NEWLINE    = 'newline'
+TT_EOF        = 'eof'
 
 KEYWORDS = [
   'var',
@@ -1959,9 +1959,9 @@ class BuiltInFunction(BaseFunction):
   execute_run.arg_names = ["fn"]
 
   def execute_open_window(self, exec_ctx):
-    createWindow(str(exec_ctx.symbol_table.get("title")))
+    createWindow(str(exec_ctx.symbol_table.get("title")), str(exec_ctx.symbol_table.get("background")))
     return RTResult().success(Number.null)
-  execute_open_window.arg_names = ["title"]
+  execute_open_window.arg_names = ["title", "background"]
 
   def execute_close_window(self, exec_ctx):
     closeWindow()
@@ -2181,8 +2181,8 @@ BuiltInFunction.is_function   = BuiltInFunction("is_function")
 BuiltInFunction.append        = BuiltInFunction("append")
 BuiltInFunction.pop           = BuiltInFunction("pop")
 BuiltInFunction.extend        = BuiltInFunction("extend")
-BuiltInFunction.len				 	  = BuiltInFunction("len")
-BuiltInFunction.run				 	  = BuiltInFunction("run")
+BuiltInFunction.len             = BuiltInFunction("len")
+BuiltInFunction.run             = BuiltInFunction("run")
 BuiltInFunction.python        = BuiltInFunction("python")
 BuiltInFunction.python_import = BuiltInFunction("python_import")
 BuiltInFunction.read_file     = BuiltInFunction("read_file")
@@ -2625,24 +2625,31 @@ def run(fn, text):
 
   return result.value, result.error
 
+
 def main():
-
+  import sys
   try:
-    while True:
-      text = input('phlang > ')
-      if text.strip() == "": continue
-      result, error = run('<stdin>', text)
+    if sys.argv[1]:
+      with open(sys.argv[1], "r") as f:
+        text = f.read() 
+      run(sys.argv[1], text)
+  except:
+    try:
+      while True:
+        text = input('phlang > ')
+        if text.strip() == "": continue
+        result, error = run('<stdin>', text)
 
-      if error:
-        print(error.as_string())
-      elif result:
-        if len(result.elements) == 1:
-          print(repr(result.elements[0]))
-        else:
-          print(repr(result))
-  except Exception as e:
-    print("Uncaught exception:", e)
-    main()
+        if error:
+          print(error.as_string())
+        elif result:
+          if len(result.elements) == 1:
+            print(repr(result.elements[0]))
+          else:
+            print(repr(result))
+    except Exception as e:
+      print("Uncaught exception:", e)
+      main()
 
 if __name__ == "__main__":
-	main()
+  main()

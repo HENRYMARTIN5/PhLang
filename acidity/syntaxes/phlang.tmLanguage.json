@@ -13,8 +13,25 @@
 		"keywords": {
 			"patterns": [{
 				"name": "keyword.control.phlang",
-				"match": "\\b(if|while|for|return)\\b"
-			}]
+				"match": "\\b(if|while|for|return|end)\\b"
+			},
+			{
+				"name": "keyword.operator.phlang",
+				"match": "\\b(+|-|%//|*|^)\\b"
+			}
+		]
+		},
+		"paren-expression": {
+			"begin": "\\(",
+			"end": "\\)",
+			"beginCaptures": {
+			  "0": { "name": "punctuation.paren.open" }
+			},
+			"endCaptures": {
+			  "0": { "name": "punctuation.paren.close" }
+			},
+			"name": "expression.group",
+			"patterns": [{ "include": "#expression" }]
 		},
 		"strings": {
 			"name": "string.quoted.double.phlang",
