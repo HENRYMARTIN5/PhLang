@@ -1,0 +1,25 @@
+{
+    "name": "acidity",
+    "displayName": "Acidity",
+    "description": "pHLang syntax hilighting support",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.63.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "phlang",
+            "aliases": ["pHLang", "phlang"],
+            "extensions": [".ph"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "phlang",
+            "scopeName": "source.ph",
+            "path": "./syntaxes/phlang.tmLanguage.json"
+        }]
+    }
+}
