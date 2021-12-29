@@ -50,7 +50,7 @@ jobs:
       - name: Install Dependencies
         run: pip install pyinstaller && ren shell.py phlang.py
         
-      - name: Build a linux binary
+      - name: Build a windows binary
         run: pyinstaller phlang.py
 
       - name: Archive production artifacts
