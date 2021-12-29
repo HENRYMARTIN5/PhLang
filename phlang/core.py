@@ -37,7 +37,7 @@ def clearWindow():
   WINDOW.delete('all')
 
 def addButton(text, x, y, pyfunc):
-  button = tk.Button(WINDOW, text=text, command=lambda: eval(pyfunc))
+  button = tk.Button(WINDOW, text=text, command=lambda: run("<onClick>", pyfunc))
   button.place(x=x, y=y)
 
 def addText(text, x, y):
@@ -1987,9 +1987,9 @@ class BuiltInFunction(BaseFunction):
   execute_clear_window.arg_names = []
 
   def execute_create_button(self, exec_ctx):
-    addButton(str(exec_ctx.symbol_table.get("text")), exec_ctx.symbol_table.get("x").value, exec_ctx.symbol_table.get("y").value, exec_ctx.symbol_table.get("pyfunc").value)
+    addButton(str(exec_ctx.symbol_table.get("text")), exec_ctx.symbol_table.get("x").value, exec_ctx.symbol_table.get("y").value, exec_ctx.symbol_table.get("functionname").value)
     return RTResult().success(Number.null)
-  execute_create_button.arg_names = ["text", "x", "y", "pyfunc"]
+  execute_create_button.arg_names = ["text", "x", "y", "functionname"]
 
   def execute_create_text(self, exec_ctx):
     addText(str(exec_ctx.symbol_table.get("text")), exec_ctx.symbol_table.get("x").value, exec_ctx.symbol_table.get("y").value)

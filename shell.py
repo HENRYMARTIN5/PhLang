@@ -1,4 +1,5 @@
-import phlang.core as core, sys
+import phlang.core as core
+import sys
 
 
 def main():
