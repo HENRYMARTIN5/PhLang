@@ -37,7 +37,7 @@ jobs:
         with:
           name: PhLang-linux
           path: |
-            dist
+            phlang/dist
             
   build-windows:
     runs-on: windows-latest
@@ -58,4 +58,4 @@ jobs:
         with:
           name: PhLang-windows
           path: |
-            dist
+            phlang/dist
