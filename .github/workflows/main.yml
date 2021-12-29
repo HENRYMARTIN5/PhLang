@@ -30,7 +30,7 @@ jobs:
         run: pip install pyinstaller && cd phlang
         
       - name: Build a linux binary
-        run: pyinstaller phlang.py
+        run: cd phlang && pyinstaller phlang.py
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
@@ -48,10 +48,10 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Install Dependencies
-        run: pip install pyinstaller && cd phlang
+        run: pip install pyinstaller
         
       - name: Build a windows binary
-        run: pyinstaller phlang.py
+        run: cd phlang && pyinstaller phlang.py
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
