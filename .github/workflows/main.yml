@@ -27,17 +27,17 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Install Dependencies
-        run: pip install pyinstaller && mv shell.py phlang.py
+        run: pip install pyinstaller && cd phlang
         
       - name: Build a linux binary
-        run: pyinstaller phlang.py
+        run: cd phlang && pyinstaller phlang.py
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
           name: PhLang-linux
           path: |
-            dist
+            phlang/dist
             
   build-windows:
     runs-on: windows-latest
@@ -48,14 +48,14 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Install Dependencies
-        run: pip install pyinstaller && ren shell.py phlang.py
+        run: pip install pyinstaller
         
       - name: Build a windows binary
-        run: pyinstaller phlang.py
+        run: cd phlang && pyinstaller phlang.py
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
           name: PhLang-windows
           path: |
-            dist
+            phlang/dist
