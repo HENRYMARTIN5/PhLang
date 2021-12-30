@@ -721,7 +721,7 @@ class Parser:
   def comp_expr(self):
     res = ParseResult()
 
-    if self.current_tok.matches(TT_KEYWORD, 'NOT'):
+    if self.current_tok.matches(TT_KEYWORD, 'not'):
       op_tok = self.current_tok
       res.register_advancement()
       self.advance()
@@ -957,7 +957,7 @@ class Parser:
     res = ParseResult()
     cases, else_case = [], None
 
-    if self.current_tok.matches(TT_KEYWORD, 'ELif'):
+    if self.current_tok.matches(TT_KEYWORD, 'elif'):
       all_cases = res.register(self.if_expr_b())
       if res.error: return res
       cases, else_case = all_cases
@@ -1067,7 +1067,7 @@ class Parser:
     end_value = res.register(self.expr())
     if res.error: return res
 
-    if self.current_tok.matches(TT_KEYWORD, 'STEP'):
+    if self.current_tok.matches(TT_KEYWORD, 'step'):
       res.register_advancement()
       self.advance()
 
@@ -1076,7 +1076,7 @@ class Parser:
     else:
       step_value = None
 
-    if not self.current_tok.matches(TT_KEYWORD, 'THEN'):
+    if not self.current_tok.matches(TT_KEYWORD, 'then'):
       return res.failure(InvalidSyntaxError(
         self.current_tok.pos_start, self.current_tok.pos_end,
         f"Expected 'THEN'"
@@ -1123,7 +1123,7 @@ class Parser:
     condition = res.register(self.expr())
     if res.error: return res
 
-    if not self.current_tok.matches(TT_KEYWORD, 'THEN'):
+    if not self.current_tok.matches(TT_KEYWORD, 'then'):
       return res.failure(InvalidSyntaxError(
         self.current_tok.pos_start, self.current_tok.pos_end,
         f"Expected 'THEN'"
@@ -2606,7 +2606,6 @@ global_symbol_table.set("str_rstrip", BuiltInFunction.str_rstrip)
 global_symbol_table.set("str_startswith", BuiltInFunction.str_startswith)
 global_symbol_table.set("str_endswith", BuiltInFunction.str_endswith)
 global_symbol_table.set("str_replace", BuiltInFunction.str_replace)
-
 
 
 def run(fn, text):
