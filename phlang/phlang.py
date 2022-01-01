@@ -2199,7 +2199,7 @@ class BuiltInFunction(BaseFunction):
     pth = os.path.dirname(__file__)
     pth = os.path.join(pth, 'packages')
     try:
-      with open(os.path.join(pth,fn), "r") as f:
+      with open(os.path.join(pth,fn,fn+".ph"), "r") as f:
         script = f.read()
     except Exception as e:
 
@@ -2686,19 +2686,20 @@ def run(fn, text):
 
 
 def installPkg(pkg): 
-  print("Installing package '%s'..." % pkg)
+  
   pkg_path = os.path.join(os.path.dirname(__file__), 'packages', pkg)
   if os.path.exists(pkg_path):
     print("Package '%s' already installed." % pkg)
-    return 0
+    return 0  
   else:
+    os.mkdir(pkg_path)
     cloud_url = 'https://raw.githubusercontent.com/HENRYMARTIN5/SolutionPackages/main/' + pkg + '/'
     print("Downloading package '%s'..." % pkg)
     
     print("Fetching dependencies...")
     dependencies = []
     with urllib.request.urlopen(cloud_url + 'deps') as f:
-      if f.status_code == 200:
+      if f.code == 200:
         dependencies = f.read().decode('utf-8').splitlines()
       else:
         print("Package '%s' does not exist." % pkg)
@@ -2710,16 +2711,18 @@ def installPkg(pkg):
     print("Downloading '%s.ph'..." % pkg)
     with urllib.request.urlopen(cloud_url + pkg+".ph") as f:
       ph = f.read().decode('utf-8')
-      with open(pkg_path+pkg+".ph", "w") as f:
+      with open(os.path.join(pkg_path,pkg+".ph"), "w+") as f:
         f.write(ph)
     
     print("Downloading 'setup.py'...")
     with urllib.request.urlopen(cloud_url + 'setup.py') as f:
       setup_py = f.read().decode('utf-8')
-      with open(pkg_path+'setup.py', "w") as f:
+      with open(os.path.join(pkg_path,"setup.py"), "w+") as f:
         f.write(setup_py)
+      print("Installing package '%s'..." % pkg)
       eval(setup_py)
 
+    print("Package '%s' installed!" % pkg)
     return 1
     
     
@@ -2733,8 +2736,10 @@ def main():
       if sys.argv[1] == 'install':
         if len(sys.argv) > 2:
           installPkg(sys.argv[2])
+          return
         else:
           print("Please specify a package name.")
+          return
       result, error = run(sys.argv[1], "run(\"" + sys.argv[1] + "\")")
       if error:
         print(error.as_string())
@@ -2760,3 +2765,15 @@ def main():
 
 if __name__ == "__main__":
   main()
+
+
+
+######################################################################################
+# Lo, and behold. Thou havest reachest the end of this script. How did you get here? #
+# Well, I guess you could have not read the actual code.                             #
+# If you did, good for you. Your head must hurt by now.                              #
+# But if you didn't, well, you're not getting anywhere.                              #
+# Hope you use pHLang well.                                                          #
+#                                                                                    #
+# - Henry Martin                                                                     #
+######################################################################################
