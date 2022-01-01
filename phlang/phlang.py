@@ -2685,41 +2685,56 @@ def run(fn, text):
   return result.value, result.error
 
 
+def installPkg(pkg): 
+  print("Installing package '%s'..." % pkg)
+  pkg_path = os.path.join(os.path.dirname(__file__), 'packages', pkg)
+  if os.path.exists(pkg_path):
+    print("Package '%s' already installed." % pkg)
+    return 0
+  else:
+    cloud_url = 'https://raw.githubusercontent.com/HENRYMARTIN5/SolutionPackages/main/' + pkg + '/'
+    print("Downloading package '%s'..." % pkg)
+    
+    print("Fetching dependencies...")
+    dependencies = []
+    with urllib.request.urlopen(cloud_url + 'deps') as f:
+      if f.status_code == 200:
+        dependencies = f.read().decode('utf-8').splitlines()
+      else:
+        print("Package '%s' does not exist." % pkg)
+        return
+    for dependency in dependencies:
+      if dependency != '':
+        installPkg(dependency)
+    
+    print("Downloading '%s.ph'..." % pkg)
+    with urllib.request.urlopen(cloud_url + pkg+".ph") as f:
+      ph = f.read().decode('utf-8')
+      with open(pkg_path+pkg+".ph", "w") as f:
+        f.write(ph)
+    
+    print("Downloading 'setup.py'...")
+    with urllib.request.urlopen(cloud_url + 'setup.py') as f:
+      setup_py = f.read().decode('utf-8')
+      with open(pkg_path+'setup.py', "w") as f:
+        f.write(setup_py)
+      eval(setup_py)
+
+    return 1
+    
+    
+
+
+
 def main():
   
   try:
     if sys.argv[1]:
       if sys.argv[1] == 'install':
-        try:
-          print('Installing package ' + sys.argv[2])
-          package_name = sys.argv[2]
-          pth = os.path.dirname(__file__)
-          pth = os.path.join(pth, 'packages')
-
-          if not os.path.exists(pth):
-            os.mkdir(pth)
-          
-          package_path = os.path.join(pth, package_name+".ph")
-          if os.path.exists(package_path):
-            print('Package already installed')
-            return
-          
-          cloud_url = 'https://raw.githubusercontent.com/HENRYMARTIN5/SolutionPackages/main/' + package_name + '.ph'
-          with urllib.request.urlopen(cloud_url) as response:
-            filecontents = response.read()
-            if response.code != 200:
-              print('Error downloading package')
-              return
-            else:
-              with open(package_path, "wb") as f:
-                f.write(filecontents)
-
-            
-          print('Installed.')
-          return
-        except: 
-          print('Package not found.')
-          return
+        if len(sys.argv) > 2:
+          installPkg(sys.argv[2])
+        else:
+          print("Please specify a package name.")
       result, error = run(sys.argv[1], "run(\"" + sys.argv[1] + "\")")
       if error:
         print(error.as_string())
