@@ -2690,32 +2690,36 @@ def main():
   try:
     if sys.argv[1]:
       if sys.argv[1] == 'install':
-        print('Installing package ' + sys.argv[2])
-        package_name = sys.argv[2]
-        pth = os.path.dirname(__file__)
-        pth = os.path.join(pth, 'packages')
+        try:
+          print('Installing package ' + sys.argv[2])
+          package_name = sys.argv[2]
+          pth = os.path.dirname(__file__)
+          pth = os.path.join(pth, 'packages')
 
-        if not os.path.exists(pth):
-          os.mkdir(pth)
-        
-        package_path = os.path.join(pth, package_name+".ph")
-        if os.path.exists(package_path):
-          print('Package already installed')
-          sys.exit(1)
-        
-        cloud_url = 'https://raw.githubusercontent.com/HENRYMARTIN5/SolutionPackages/main/' + package_name + '.ph'
-        with urllib.request.urlopen(cloud_url) as response:
-          filecontents = response.read()
-          if response.code != 200:
-            print('Error downloading package')
-            sys.exit(1)
-          else:
-            with open(package_path, "wb") as f:
-              f.write(filecontents)
-
+          if not os.path.exists(pth):
+            os.mkdir(pth)
           
-        print('Installed.')
-        sys.exit(0)
+          package_path = os.path.join(pth, package_name+".ph")
+          if os.path.exists(package_path):
+            print('Package already installed')
+            return
+          
+          cloud_url = 'https://raw.githubusercontent.com/HENRYMARTIN5/SolutionPackages/main/' + package_name + '.ph'
+          with urllib.request.urlopen(cloud_url) as response:
+            filecontents = response.read()
+            if response.code != 200:
+              print('Error downloading package')
+              return
+            else:
+              with open(package_path, "wb") as f:
+                f.write(filecontents)
+
+            
+          print('Installed.')
+          return
+        except: 
+          print('Package not found.')
+          return
       result, error = run(sys.argv[1], "run(\"" + sys.argv[1] + "\")")
       if error:
         print(error.as_string())
