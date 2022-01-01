@@ -1,10 +1,12 @@
 
 import os
 import string
-import os
+import time
 import math
 from importlib import import_module
 import tkinter as tk
+import sys
+import urllib.request
 
 DIGITS = '0123456789'
 LETTERS = string.ascii_letters
@@ -19,6 +21,8 @@ def createWindow(title, background):
   WINDOW.title(title)
   WINDOW.geometry("600x400")
   WINDOW.resizable(0, 0)
+  WINDOW.protocol("WM_DELETE_WINDOW", sys.exit)
+
   WINDOW.configure(background=background)
 
 def closeWindow():
@@ -44,6 +48,9 @@ def addText(text, x, y):
   text = tk.Label(WINDOW, text=text)
   text.place(x=x,y=y)
 
+def hang():
+  while True:
+    pass
 
 
 def string_with_arrows(text, pos_start, pos_end):
@@ -708,7 +715,7 @@ class Parser:
       if res.error: return res
       return res.success(VarAssignNode(var_name, expr))
 
-    node = res.register(self.bin_op(self.comp_expr, ((TT_KEYWORD, 'AND'), (TT_KEYWORD, 'OR'))))
+    node = res.register(self.bin_op(self.comp_expr, ((TT_KEYWORD, 'and'), (TT_KEYWORD, 'or'))))
 
     if res.error:
       return res.failure(InvalidSyntaxError(
@@ -2169,6 +2176,53 @@ class BuiltInFunction(BaseFunction):
     return RTResult().success(Number(1))
   execute_writefile.arg_names = ["file_name", "content"]
 
+  def execute_hang(self, exec_ctx):
+    hang()
+    return RTResult().success(Number(1))
+  execute_hang.arg_names = []
+
+  def execute_exit(self, exec_ctx):
+    sys.exit(0)
+  execute_exit.arg_names = []
+
+  def execute_import(self, exec_ctx):
+    fn = exec_ctx.symbol_table.get("fn")
+
+    if not isinstance(fn, String):
+      return RTResult().failure(RTError(
+        self.pos_start, self.pos_end,
+        "Argument must be string",
+        exec_ctx
+      ))
+
+    fn = fn.value
+    pth = os.path.dirname(__file__)
+    pth = os.path.join(pth, 'packages')
+    try:
+      with open(os.path.join(pth,fn), "r") as f:
+        script = f.read()
+    except Exception as e:
+
+      return RTResult().failure(RTError(
+        self.pos_start, self.pos_end,
+        f"Failed to load script \"{fn}\"\n" + str(e),
+        exec_ctx
+      ))
+
+    _, error = run(fn, script)
+
+    if error:
+      return RTResult().failure(RTError(
+        self.pos_start, self.pos_end,
+        f"Failed to finish executing script \"{fn}\"\n" +
+        error.as_string(),
+        exec_ctx
+      ))
+
+    return RTResult().success(Number.null)
+  execute_import.arg_names = ["fn"]
+
+
 BuiltInFunction.print         = BuiltInFunction("print")
 BuiltInFunction.print_ret     = BuiltInFunction("print_ret")
 BuiltInFunction.input         = BuiltInFunction("input")
@@ -2180,6 +2234,7 @@ BuiltInFunction.is_list       = BuiltInFunction("is_list")
 BuiltInFunction.is_function   = BuiltInFunction("is_function")
 BuiltInFunction.append        = BuiltInFunction("append")
 BuiltInFunction.pop           = BuiltInFunction("pop")
+BuiltInFunction.hang = BuiltInFunction("hang")
 BuiltInFunction.extend        = BuiltInFunction("extend")
 BuiltInFunction.len             = BuiltInFunction("len")
 BuiltInFunction.run             = BuiltInFunction("run")
@@ -2242,6 +2297,8 @@ BuiltInFunction.str_replace = BuiltInFunction("str_replace")
 BuiltInFunction.str_startswith = BuiltInFunction("str_startswith")
 BuiltInFunction.str_endswith = BuiltInFunction("str_endswith")
 BuiltInFunction.writefile = BuiltInFunction("writefile")
+BuiltInFunction.exit = BuiltInFunction("exit")
+BuiltInFunction.import_ = BuiltInFunction("import")
 
 class Context:
   def __init__(self, display_name, parent=None, parent_entry_pos=None):
@@ -2539,6 +2596,8 @@ global_symbol_table.set("pop", BuiltInFunction.pop)
 global_symbol_table.set("extend", BuiltInFunction.extend)
 global_symbol_table.set("len", BuiltInFunction.len)
 global_symbol_table.set("run", BuiltInFunction.run)
+global_symbol_table.set("hang", BuiltInFunction.hang)
+global_symbol_table.set("exit", BuiltInFunction.exit)
 # Python integration
 global_symbol_table.set("python", BuiltInFunction.python)
 global_symbol_table.set("py", BuiltInFunction.python)
@@ -2606,7 +2665,8 @@ global_symbol_table.set("str_rstrip", BuiltInFunction.str_rstrip)
 global_symbol_table.set("str_startswith", BuiltInFunction.str_startswith)
 global_symbol_table.set("str_endswith", BuiltInFunction.str_endswith)
 global_symbol_table.set("str_replace", BuiltInFunction.str_replace)
-
+# Packaging
+global_symbol_table.set("import", BuiltInFunction.import_)
 
 def run(fn, text):
   lexer = Lexer(fn, text)
@@ -2626,12 +2686,41 @@ def run(fn, text):
 
 
 def main():
-  import sys
+  
   try:
     if sys.argv[1]:
-      with open(sys.argv[1], "r") as f:
-        text = f.read() 
-      run(sys.argv[1], text)
+      if sys.argv[1] == 'install':
+        print('Installing package ' + sys.argv[2])
+        package_name = sys.argv[2]
+        pth = os.path.dirname(__file__)
+        pth = os.path.join(pth, 'packages')
+
+        if not os.path.exists(pth):
+          os.mkdir(pth)
+        
+        package_path = os.path.join(pth, package_name+".ph")
+        if os.path.exists(package_path):
+          print('Package already installed')
+          sys.exit(1)
+        
+        cloud_url = 'https://raw.githubusercontent.com/HENRYMARTIN5/SolutionPackages/main/' + package_name + '.ph'
+        with urllib.request.urlopen(cloud_url) as response:
+          filecontents = response.read()
+          if response.code != 200:
+            print('Error downloading package')
+            sys.exit(1)
+          else:
+            with open(package_path, "wb") as f:
+              f.write(filecontents)
+
+          
+        print('Installed.')
+        sys.exit(0)
+      result, error = run(sys.argv[1], "run(\"" + sys.argv[1] + "\")")
+      if error:
+        print(error.as_string())
+      if WINDOW:
+        raise Exception("Passing to repl") # Terrible solution. But hey, what the heck. It works!
   except:
     try:
       while True:
