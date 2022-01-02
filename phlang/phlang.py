@@ -2631,6 +2631,9 @@ class Interpreter:
   
 
 
+#######################################
+# SYMBOL TABLE                        #
+#######################################
 
 global_symbol_table = SymbolTable()
 # Basic globals
