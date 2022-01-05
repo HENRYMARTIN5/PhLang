@@ -1,55 +1,18 @@
-# Danger: Confusion and multiple possible headaches ahead.
 
 import os
 import string
 import time
 import math
 from importlib import import_module
-import tkinter as tk
-import sys
-import urllib.request
+import sys, urllib
+from browser import document, window
 
-
-import pyautogui
 
 DIGITS = '0123456789'
 LETTERS = string.ascii_letters
 LETTERS_DIGITS = LETTERS + DIGITS
 
-# Gui Globals
-WINDOW = None
 
-def createWindow(title, background):
-  global WINDOW
-  WINDOW = tk.Tk()
-  WINDOW.title(title)
-  WINDOW.geometry("600x400")
-  WINDOW.resizable(0, 0)
-  WINDOW.protocol("WM_DELETE_WINDOW", sys.exit)
-  WINDOW.configure(background=background)
-
-def closeWindow():
-  WINDOW.destroy()
-
-def getWindowWidth():
-  return WINDOW.winfo_width()
-
-def getWindowHeight():
-  return WINDOW.winfo_height()
-
-def resizeWindow(height, width):
-  WINDOW.geometry(f"{width}x{height}")
-
-def clearWindow():
-  WINDOW.delete('all')
-
-def addButton(text, x, y, pyfunc):
-  button = tk.Button(WINDOW, text=text, command=lambda: run("<onClick>", pyfunc))
-  button.place(x=x, y=y)
-
-def addText(text, x, y):
-  text = tk.Label(WINDOW, text=text)
-  text.place(x=x,y=y)
 
 def hang():
   while True:
@@ -1786,19 +1749,6 @@ class BuiltInFunction(BaseFunction):
     return RTResult().success(String(text))
   execute_input.arg_names = []
 
-  def execute_read_file(self, exec_ctx):
-    file_name = exec_ctx.symbol_table.get('value')
-    try:
-      with open(file_name.value) as f:
-        text = f.read()
-    except Exception as e:
-      return RTResult().failure(RTError(
-        self.pos_start, self.pos_end,
-        f'Failed to open file {file_name.value}',
-        exec_ctx
-      ))
-    return RTResult().success(String(text))
-  execute_read_file.arg_names = ['value']
 
   def execute_input_int(self, exec_ctx):
     while True:
@@ -1967,43 +1917,7 @@ class BuiltInFunction(BaseFunction):
     return RTResult().success(Number.null)
   execute_run.arg_names = ["fn"]
 
-  def execute_open_window(self, exec_ctx):
-    createWindow(str(exec_ctx.symbol_table.get("title")), str(exec_ctx.symbol_table.get("background")))
-    return RTResult().success(Number.null)
-  execute_open_window.arg_names = ["title", "background"]
 
-  def execute_close_window(self, exec_ctx):
-    closeWindow()
-    return RTResult().success(Number.null)
-  execute_close_window.arg_names = []
-
-  def execute_window_width(self, exec_ctx):
-    return RTResult().success(Number(getWindowWidth()))
-  execute_window_width.arg_names = []
-
-  def execute_window_height(self, exec_ctx):
-    return RTResult().success(Number(getWindowHeight()))
-  execute_window_height.arg_names = []
-  
-  def execute_resize_window(self, exec_ctx):
-    resizeWindow(exec_ctx.symbol_table.get("width").value, exec_ctx.symbol_table.get("height").value)
-    return RTResult().success(Number.null)
-  execute_resize_window.arg_names = ["height", "width"]
-
-  def execute_clear_window(self, exec_ctx):
-    clearWindow()
-    return RTResult().success(Number.null)
-  execute_clear_window.arg_names = []
-
-  def execute_create_button(self, exec_ctx):
-    addButton(str(exec_ctx.symbol_table.get("text")), exec_ctx.symbol_table.get("x").value, exec_ctx.symbol_table.get("y").value, exec_ctx.symbol_table.get("functionname").value)
-    return RTResult().success(Number.null)
-  execute_create_button.arg_names = ["text", "x", "y", "functionname"]
-
-  def execute_create_text(self, exec_ctx):
-    addText(str(exec_ctx.symbol_table.get("text")), exec_ctx.symbol_table.get("x").value, exec_ctx.symbol_table.get("y").value)
-    return RTResult().success(Number.null)
-  execute_create_text.arg_names = ["text", "x", "y"]
 
   def execute_math_acos(self, exec_ctx):
     return RTResult().success(Number(math.acos(exec_ctx.symbol_table.get("x").value)))
@@ -2169,14 +2083,7 @@ class BuiltInFunction(BaseFunction):
     return RTResult().success(Number(int(exec_ctx.symbol_table.get("x").value.endswith(exec_ctx.symbol_table.get("y").value == True))))
   execute_str_endswith.arg_names = ["x", "y"]
 
-  def execute_writefile(self, exec_ctx):
-    file_name = exec_ctx.symbol_table.get("file_name").value
-    content = exec_ctx.symbol_table.get("content").value
-    with open(file_name, "w") as f:
-      f.write(content)
-      f.close()
-    return RTResult().success(Number(1))
-  execute_writefile.arg_names = ["file_name", "content"]
+
 
   def execute_hang(self, exec_ctx):
     hang()
@@ -2236,40 +2143,7 @@ class BuiltInFunction(BaseFunction):
     return RTResult().success(Number.null)
   execute_eval.arg_names = ["fn"]
 
-  def execute_mouse_click(self, exec_ctx):
-    pyautogui.click()
-    return RTResult().success(Number.null)
-  execute_mouse_click.arg_names = []
 
-  def execute_mouse_click_png(self, exec_ctx):
-    pyautogui.click(exec_ctx.symbol_table.get("pngname").value)
-    return RTResult().success(Number.null)
-  execute_mouse_click_png.arg_names = ["pngname"]
-
-  def execute_mouse_move(self, exec_ctx):
-    pyautogui.moveTo(exec_ctx.symbol_table.get("x").value, exec_ctx.symbol_table.get("y").value)
-    return RTResult().success(Number.null)
-  execute_mouse_move.arg_names = ["x", "y"]
-
-  def execute_mouse_scroll(self, exec_ctx):
-    pyautogui.scroll(exec_ctx.symbol_table.get("x").value)
-    return RTResult().success(Number.null)
-  execute_mouse_scroll.arg_names = ["x"]
-
-  def execute_key_type(self, exec_ctx):
-    pyautogui.typewrite(exec_ctx.symbol_table.get("key").value)
-    return RTResult().success(Number.null)
-  execute_key_type.arg_names = ["key"]
-
-  def execute_key_press(self, exec_ctx):
-    pyautogui.press(exec_ctx.symbol_table.get("key").value)
-    return RTResult().success(Number.null)
-  execute_key_press.arg_names = ["key"]
-
-  def execute_delay(self, exec_ctx):
-    time.sleep(exec_ctx.symbol_table.get("time").value)
-    return RTResult().success(Number.null)
-  execute_delay.arg_names = ["time"]
   
 
 
@@ -2290,15 +2164,8 @@ BuiltInFunction.len             = BuiltInFunction("len")
 BuiltInFunction.run             = BuiltInFunction("run")
 BuiltInFunction.python        = BuiltInFunction("python")
 BuiltInFunction.python_import = BuiltInFunction("python_import")
-BuiltInFunction.read_file     = BuiltInFunction("read_file")
 BuiltInFunction.open_window   = BuiltInFunction("open_window")
-BuiltInFunction.close_window  = BuiltInFunction("close_window")
-BuiltInFunction.window_width  = BuiltInFunction("window_width")
-BuiltInFunction.window_height = BuiltInFunction("window_height")
-BuiltInFunction.resize_window = BuiltInFunction("resize_window")
-BuiltInFunction.clear_window  = BuiltInFunction("clear_window")
-BuiltInFunction.create_button = BuiltInFunction("create_button")
-BuiltInFunction.create_text   = BuiltInFunction("create_text")
+
 
 BuiltInFunction.math_acos = BuiltInFunction("math_acos")
 BuiltInFunction.math_acosh   = BuiltInFunction("math_acosh")
@@ -2346,17 +2213,10 @@ BuiltInFunction.str_join = BuiltInFunction("str_join")
 BuiltInFunction.str_replace = BuiltInFunction("str_replace")
 BuiltInFunction.str_startswith = BuiltInFunction("str_startswith")
 BuiltInFunction.str_endswith = BuiltInFunction("str_endswith")
-BuiltInFunction.writefile = BuiltInFunction("writefile")
 BuiltInFunction.exit = BuiltInFunction("exit")
 BuiltInFunction.import_ = BuiltInFunction("import")
 BuiltInFunction.eval = BuiltInFunction("eval")
 
-BuiltInFunction.mouse_click = BuiltInFunction("mouse_click")
-BuiltInFunction.mouse_click_png = BuiltInFunction("mouse_click_png")
-BuiltInFunction.mouse_move = BuiltInFunction("mouse_move")
-BuiltInFunction.mouse_scroll = BuiltInFunction("mouse_scroll")
-BuiltInFunction.key_type = BuiltInFunction("key_type")
-BuiltInFunction.key_press = BuiltInFunction("key_press")
 
 BuiltInFunction.delay = BuiltInFunction("delay")
 class Context:
@@ -2665,18 +2525,8 @@ global_symbol_table.set("eval", BuiltInFunction.eval)
 global_symbol_table.set("python", BuiltInFunction.python)
 global_symbol_table.set("py", BuiltInFunction.python)
 global_symbol_table.set("py_import", BuiltInFunction.python_import)
-# IO
-global_symbol_table.set("readfile", BuiltInFunction.read_file)
-global_symbol_table.set("writefile", BuiltInFunction.writefile)
-# GUI
-global_symbol_table.set("openwindow", BuiltInFunction.open_window)
-global_symbol_table.set("closewindow", BuiltInFunction.close_window)
-global_symbol_table.set("window_width", BuiltInFunction.window_width)
-global_symbol_table.set("window_height", BuiltInFunction.window_height)
-global_symbol_table.set("window_resize", BuiltInFunction.resize_window)
-global_symbol_table.set("window_clear", BuiltInFunction.clear_window)
-global_symbol_table.set("window_create_button", BuiltInFunction.create_button)
-global_symbol_table.set("window_create_text", BuiltInFunction.create_text)
+
+
 # Fancy math
 global_symbol_table.set("math_e", Number.e)
 global_symbol_table.set("math_inf", Number.inf)
@@ -2730,13 +2580,6 @@ global_symbol_table.set("str_endswith", BuiltInFunction.str_endswith)
 global_symbol_table.set("str_replace", BuiltInFunction.str_replace)
 # Packaging
 global_symbol_table.set("import", BuiltInFunction.import_)
-# Automation / Mouse and keyboard control functions
-global_symbol_table.set("mouse_click", BuiltInFunction.mouse_click)
-global_symbol_table.set("mouse_click_png", BuiltInFunction.mouse_click_png)
-global_symbol_table.set("mouse_move", BuiltInFunction.mouse_move)
-global_symbol_table.set("mouse_scroll", BuiltInFunction.mouse_scroll)
-global_symbol_table.set("key_type", BuiltInFunction.key_type)
-global_symbol_table.set("key_press", BuiltInFunction.key_press)
 # Utils
 global_symbol_table.set("delay", BuiltInFunction.delay)
 
@@ -2757,6 +2600,8 @@ def run(fn, text):
 
   return result.value, result.error
 
+def webphrun(text):
+  return run('<webph.eval>', text)
 
 def installPkg(pkg): 
   
@@ -2818,22 +2663,27 @@ def main():
       result, error = run(sys.argv[1], "run(\"" + sys.argv[1] + "\")")
       if error:
         print(error.as_string())
-      if WINDOW:
-        raise Exception("Passing to repl") # Terrible solution. But hey, what the heck. It works!
   except:
     try:
-      while True:
-        text = input('phlang > ')
-        if text.strip() == "": continue
-        result, error = run('<stdin>', text)
+      # while True:
+      #   text = input('phlang > ')
+      #   if text.strip() == "": continue
+      #   result, error = run('<stdin>', text)
 
-        if error:
-          print(error.as_string())
-        elif result:
-          if len(result.elements) == 1:
-            print(repr(result.elements[0]))
-          else:
-            print(repr(result))
+      #   if error:
+      #     print(error.as_string())
+      #   elif result:
+      #     if len(result.elements) == 1:
+      #       print(repr(result.elements[0]))
+      #     else:
+      #       print(repr(result))
+      print("webPH - the web-based version of phlang")
+      print("Copyright (C) 2022 Henry Martin")
+      print("This program comes with ABSOLUTELY NO WARRANTY.")
+      print("This is free software, and you are welcome to redistribute it")
+      print("under certain conditions; see the LICENSE file for details.")
+      window.pheval = webphrun
+
     except Exception as e:
       print("Uncaught exception:", e)
       main()
