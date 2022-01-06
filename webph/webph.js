@@ -1,4 +1,23 @@
-// Injects brython, brython stdlib, and webph.py
+window.hasLoaded = false;
+const timeout = setTimeout(evalAllPhlang, 100);
 
-fetch("https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.5/brython.min.js").then(txt => {eval(txt);});
-fetch("https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.5/brython_stdlib.min.js").then(txt => {eval(txt);});
+function evalAllPhlang(){
+    if(window.hasLoaded){
+        for(node in document.getElementsByTagName("script")){
+            tag = document.getElementsByTagName("script")[node];
+            if(tag.type == "text/phlang"){
+                if(!tag.src){
+                    var code = tag.innerHTML;
+                    pheval(code);
+                } else {
+                    fetch(tag.src).then(text => pheval(text));
+                }
+                
+            }
+        }
+        clearTimeout(timeout);
+    } else {
+        return;
+    }
+}
+

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>webPH REPL</title>
+    <!-- Don't delete anything here, this is required to make python / brython / webph work. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.5/brython.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.5/brython_stdlib.min.js">
+    </script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://unpkg.com/jquery.terminal@2.x.x/js/jquery.terminal.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/jquery.terminal@2.x.x/css/jquery.terminal.min.css"/>
+    <!------------------------------ -->
+    <style>
+body, #terminal {
+  height: 100vh;
+  width: 100vw;
+  margin: 0px;
+}
+    </style>
+    <script src="webphrepl.js"></script>
+</head>
+
+<body onload="brython(1);">
+    <!-- Include our script -->
+    <script src="webphrepl.py" type="text/python"></script>
+
+    <div id="terminal" class="terminal"></div>
+</body>
+
+</html>

@@ -7,10 +7,13 @@ from importlib import import_module
 import sys, urllib
 from browser import document, window
 
+
 DIGITS = '0123456789'
 LETTERS = string.ascii_letters
 LETTERS_DIGITS = LETTERS + DIGITS
 
+
+jq = window.jQuery
 
 
 def hang():
@@ -1719,7 +1722,8 @@ class BuiltInFunction(BaseFunction):
 
 
   def execute_print(self, exec_ctx):
-    print(str(exec_ctx.symbol_table.get('value')))
+    term = jq("#terminal").terminal()
+    term.echo(str(exec_ctx.symbol_table.get('value')))
     return RTResult().success(Number.null)
   execute_print.arg_names = ['value']
 
@@ -2600,7 +2604,7 @@ def run(fn, text):
   return result.value, result.error
 
 def webphrun(text):
-  result, error = run('<webph.eval>', text)
+  result, error = run('<stdin>', text)
   if error: return error.as_string()
   return str(result)
 
@@ -2684,9 +2688,6 @@ def main():
       print("This is free software, and you are welcome to redistribute it")
       print("under certain conditions; see the LICENSE file for details.")
       window.pheval = webphrun
-      window.installPkg = installPkg
-      window.hasLoaded = True
-
 
     except Exception as e:
       print("Uncaught exception:", e)
