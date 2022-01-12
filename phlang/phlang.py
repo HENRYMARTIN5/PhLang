@@ -2795,14 +2795,27 @@ def installPkg(pkg):
         print("Package '%s' does not exist." % pkg)
         return
     for dependency in dependencies:
-      if dependency != '':
+      if dependency.startswith('#'):
+        pass
+      elif dependency.startswith('pip:'):
+        os.system('pip install ' + dependency[4:])
+      elif dependency != '':
         installPkg(dependency)
+      else:
+        print("Package '%s' does not exist." % pkg)
+        return
     
     print("Downloading '%s.ph'..." % pkg)
     with urllib.request.urlopen(cloud_url + pkg+".ph") as f:
       ph = f.read().decode('utf-8')
       with open(os.path.join(pkg_path,pkg+".ph"), "w+") as f:
         f.write(ph)
+
+    print("Downloading 'init.py'...")
+    with urllib.request.urlopen(cloud_url + 'init.py') as f:
+      init = f.read().decode('utf-8')
+      with open(os.path.join(pkg_path,'init.py'), "w+") as f:
+        f.write(init)
     
     print("Downloading setup files...")
     with urllib.request.urlopen(cloud_url + 'setup.py') as f:
