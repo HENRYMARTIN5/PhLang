@@ -12,6 +12,9 @@ import urllib.request
 
 import pyautogui
 
+execGlobals = {}
+execLocals = {}
+
 DIGITS = '0123456789'
 LETTERS = string.ascii_letters
 LETTERS_DIGITS = LETTERS + DIGITS
@@ -1764,7 +1767,8 @@ class BuiltInFunction(BaseFunction):
   def execute_python(self, exec_ctx):
     code = exec_ctx.symbol_table.get('value')
     try:
-      result = eval(code.value.replace('\\n', '\n').replace('\\t', '\t').replace('\\r', '\r'))
+      result = compile(code.value.replace('\\n', '\n').replace('\\t', '\t').replace('\\r', '\r'), "<eval>", "exec")
+      result = exec(result, execGlobals, execLocals)
       text = str(result)
     except Exception as e:
       return RTResult().failure(RTError(
@@ -2211,6 +2215,18 @@ class BuiltInFunction(BaseFunction):
         exec_ctx
       ))
 
+    try:
+      with open(os.path.join(pth,fn,"init.py"), "r") as f:
+        script2 = f.read()
+    except Exception as e:
+
+      return RTResult().failure(RTError(
+        self.pos_start, self.pos_end,
+        f"Failed to load script \"init.py\"\n" + str(e),
+        exec_ctx
+      ))
+    exec(compile(script2, "<init.py> for module " + fn, "exec"), execGlobals, execLocals)
+
     _, error = run(fn, script)
 
     if error:
@@ -2220,6 +2236,7 @@ class BuiltInFunction(BaseFunction):
         error.as_string(),
         exec_ctx
       ))
+    
 
     return RTResult().success(Number.null)
   execute_import.arg_names = ["fn"]

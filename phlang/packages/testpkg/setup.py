@@ -1,0 +1,1 @@
+print("null and void")
