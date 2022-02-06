@@ -8,8 +8,6 @@ from importlib import import_module
 import tkinter as tk
 import sys
 import urllib.request
-
-
 import pyautogui
 
 execGlobals = {}
@@ -792,7 +790,7 @@ class Parser:
         if res.error:
           return res.failure(InvalidSyntaxError(
             self.current_tok.pos_start, self.current_tok.pos_end,
-            "Expected ')', 'var', 'if', 'for', 'while', 'func', int, float, identifier, '+', '-', '(', '[' or 'NOT'"
+            "Expected ')', 'var', 'if', 'for', 'while', 'func', int, float, identifier, '+', '-', '(', '[' or 'not'"
           ))
 
         while self.current_tok.type == TT_COMMA:
@@ -1403,7 +1401,7 @@ class Value:
   def ored_by(self, other):
     return None, self.illegal_operation(other)
 
-  def notted(self):
+  def notted(self, other):
     return None, self.illegal_operation(other)
 
   def execute(self, args):
@@ -2184,7 +2182,6 @@ class BuiltInFunction(BaseFunction):
 
   def execute_hang(self, exec_ctx):
     hang()
-    return RTResult().success(Number(1))
   execute_hang.arg_names = []
 
   def execute_exit(self, exec_ctx):
@@ -2823,7 +2820,7 @@ def installPkg(pkg):
       with open(os.path.join(pkg_path,"setup.py"), "w+") as f:
         f.write(setup_py)
       print("Installing package '%s'..." % pkg)
-      eval(setup_py)
+      exec(compile(setup_py))
 
     
 
