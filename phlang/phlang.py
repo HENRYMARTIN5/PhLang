@@ -8,7 +8,6 @@ from importlib import import_module
 import tkinter as tk
 import sys
 import urllib.request
-import pyautogui
 
 execGlobals = {}
 execLocals = {}
@@ -2250,36 +2249,6 @@ class BuiltInFunction(BaseFunction):
     return RTResult().success(Number.null)
   execute_eval.arg_names = ["fn"]
 
-  def execute_mouse_click(self, exec_ctx):
-    pyautogui.click()
-    return RTResult().success(Number.null)
-  execute_mouse_click.arg_names = []
-
-  def execute_mouse_click_png(self, exec_ctx):
-    pyautogui.click(exec_ctx.symbol_table.get("pngname").value)
-    return RTResult().success(Number.null)
-  execute_mouse_click_png.arg_names = ["pngname"]
-
-  def execute_mouse_move(self, exec_ctx):
-    pyautogui.moveTo(exec_ctx.symbol_table.get("x").value, exec_ctx.symbol_table.get("y").value)
-    return RTResult().success(Number.null)
-  execute_mouse_move.arg_names = ["x", "y"]
-
-  def execute_mouse_scroll(self, exec_ctx):
-    pyautogui.scroll(exec_ctx.symbol_table.get("x").value)
-    return RTResult().success(Number.null)
-  execute_mouse_scroll.arg_names = ["x"]
-
-  def execute_key_type(self, exec_ctx):
-    pyautogui.typewrite(exec_ctx.symbol_table.get("key").value)
-    return RTResult().success(Number.null)
-  execute_key_type.arg_names = ["key"]
-
-  def execute_key_press(self, exec_ctx):
-    pyautogui.press(exec_ctx.symbol_table.get("key").value)
-    return RTResult().success(Number.null)
-  execute_key_press.arg_names = ["key"]
-
   def execute_delay(self, exec_ctx):
     time.sleep(exec_ctx.symbol_table.get("time").value)
     return RTResult().success(Number.null)
@@ -2364,13 +2333,6 @@ BuiltInFunction.writefile = BuiltInFunction("writefile")
 BuiltInFunction.exit = BuiltInFunction("exit")
 BuiltInFunction.import_ = BuiltInFunction("import")
 BuiltInFunction.eval = BuiltInFunction("eval")
-
-BuiltInFunction.mouse_click = BuiltInFunction("mouse_click")
-BuiltInFunction.mouse_click_png = BuiltInFunction("mouse_click_png")
-BuiltInFunction.mouse_move = BuiltInFunction("mouse_move")
-BuiltInFunction.mouse_scroll = BuiltInFunction("mouse_scroll")
-BuiltInFunction.key_type = BuiltInFunction("key_type")
-BuiltInFunction.key_press = BuiltInFunction("key_press")
 
 BuiltInFunction.delay = BuiltInFunction("delay")
 class Context:
@@ -2744,13 +2706,6 @@ global_symbol_table.set("str_endswith", BuiltInFunction.str_endswith)
 global_symbol_table.set("str_replace", BuiltInFunction.str_replace)
 # Packaging
 global_symbol_table.set("import", BuiltInFunction.import_)
-# Automation / Mouse and keyboard control functions
-global_symbol_table.set("mouse_click", BuiltInFunction.mouse_click)
-global_symbol_table.set("mouse_click_png", BuiltInFunction.mouse_click_png)
-global_symbol_table.set("mouse_move", BuiltInFunction.mouse_move)
-global_symbol_table.set("mouse_scroll", BuiltInFunction.mouse_scroll)
-global_symbol_table.set("key_type", BuiltInFunction.key_type)
-global_symbol_table.set("key_press", BuiltInFunction.key_press)
 # Utils
 global_symbol_table.set("delay", BuiltInFunction.delay)
 

@@ -1,0 +1,2 @@
+language = "python3"
+run = "cd phlang && python3 phlang.py"
