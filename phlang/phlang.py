@@ -2829,7 +2829,6 @@ if __name__ == "__main__":
 # Lo, and behold. Thou havest reachest the end of this script. How did you get here? #
 # Well, I guess you could have not read the actual code.                             #
 # If you actually did, good for you. Your head must hurt by now.                     #
-# But if you didn't, well, you're not getting anywhere.                              #
 # Hope you use pHLang well.                                                          #
 #                                                                                    #
 # - Henry Martin                                                                     #
