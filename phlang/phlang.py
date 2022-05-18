@@ -1,11 +1,14 @@
 # Danger: Confusion and multiple possible headaches ahead.
+USEGUI = False
+
 
 import os
 import string
 import time
 import math
 from importlib import import_module
-import tkinter as tk
+if USEGUI:
+  import tkinter as tk
 import sys
 import urllib.request
 
@@ -20,36 +23,44 @@ LETTERS_DIGITS = LETTERS + DIGITS
 WINDOW = None
 
 def createWindow(title, background):
-  global WINDOW
-  WINDOW = tk.Tk()
-  WINDOW.title(title)
-  WINDOW.geometry("600x400")
-  WINDOW.resizable(0, 0)
-  WINDOW.protocol("WM_DELETE_WINDOW", sys.exit)
-  WINDOW.configure(background=background)
+  if USEGUI:
+    global WINDOW
+    WINDOW = tk.Tk()
+    WINDOW.title(title)
+    WINDOW.geometry("600x400")
+    WINDOW.resizable(0, 0)
+    WINDOW.protocol("WM_DELETE_WINDOW", sys.exit)
+    WINDOW.configure(background=background)
 
 def closeWindow():
-  WINDOW.destroy()
+  if USEGUI:
+    WINDOW.destroy()
 
 def getWindowWidth():
-  return WINDOW.winfo_width()
+  if USEGUI:
+    return WINDOW.winfo_width()
 
 def getWindowHeight():
-  return WINDOW.winfo_height()
+  if USEGUI:
+    return WINDOW.winfo_height()
 
 def resizeWindow(height, width):
-  WINDOW.geometry(f"{width}x{height}")
+  if USEGUI:
+    WINDOW.geometry(f"{width}x{height}")
 
 def clearWindow():
-  WINDOW.delete('all')
+  if USEGUI:
+    WINDOW.delete('all')
 
 def addButton(text, x, y, pyfunc):
-  button = tk.Button(WINDOW, text=text, command=lambda: run("<onClick>", pyfunc))
-  button.place(x=x, y=y)
+  if USEGUI:
+    button = tk.Button(WINDOW, text=text, command=lambda: run("<onClick>", pyfunc))
+    button.place(x=x, y=y)
 
 def addText(text, x, y):
-  text = tk.Label(WINDOW, text=text)
-  text.place(x=x,y=y)
+  if USEGUI:
+    text = tk.Label(WINDOW, text=text)
+    text.place(x=x,y=y)
 
 def hang():
   while True:
