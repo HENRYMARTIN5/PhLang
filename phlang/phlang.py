@@ -1,6 +1,6 @@
 # Danger: Confusion and multiple possible headaches ahead.
-USEGUI = False
 
+USEGUI = False # Don't turn this on in a headless environment. It's off by default because it breaks things when it's on.
 
 import os
 import string
@@ -2748,15 +2748,19 @@ def installPkg(pkg):
     os.mkdir(pkg_path)
     cloud_url = 'https://raw.githubusercontent.com/HENRYMARTIN5/SolutionPackages/main/' + pkg + '/'
     print("Downloading package '%s'..." % pkg)
-    
+
     print("Fetching dependencies...")
     dependencies = []
-    with urllib.request.urlopen(cloud_url + 'deps') as f:
-      if f.code == 200:
-        dependencies = f.read().decode('utf-8').splitlines()
-      else:
-        print("Package '%s' does not exist." % pkg)
-        return
+    try:
+      with urllib.request.urlopen(cloud_url + 'deps') as f:
+        if f.code == 200:
+          dependencies = f.read().decode('utf-8').splitlines()
+        else:
+          print("Package '%s' does not exist." % pkg)
+          return
+    except urllib.error.HTTPError:
+      print("Package '%s' does not exist." % pkg)
+      return
     for dependency in dependencies:
       if dependency.startswith('#'):
         pass
@@ -2798,8 +2802,8 @@ def installPkg(pkg):
 
 
 def main():
-  
   try:
+    sys.argv[1]
     if sys.argv[1]:
       if sys.argv[1] == 'install':
         if len(sys.argv) > 2:
@@ -2811,8 +2815,6 @@ def main():
       result, error = run(sys.argv[1], "run(\"" + sys.argv[1] + "\")")
       if error:
         print(error.as_string())
-      if WINDOW:
-        raise Exception("Passing to repl") # Terrible solution. But hey, what the heck. It works!
   except:
     try:
       while True:
@@ -2827,6 +2829,7 @@ def main():
             print(repr(result.elements[0]))
           else:
             print(repr(result))
+
     except Exception as e:
       print("Uncaught exception:", e)
       main()
